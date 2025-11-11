@@ -12,23 +12,29 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}                       
-                    </x-nav-link>
-
-                    <x-nav-link :href="route('admin.clientes.index')" :active="request()->routeIs('clientes.*')">
-                    {{ __('Clientes') }}
+                    <x-nav-link>
+                        {{ __('MotoGestor') }}                       
                     </x-nav-link>
                 </div>
 
                 @php $user = Auth::user(); @endphp
-
                 @if ($user->role === 'admin')
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('admin.clientes.index')" :active="request()->routeIs('clientes.*')">
+                        {{ __('Clientes') }}
+                        </x-nav-link>
+                    </div>
+
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             {{ __('Usuarios') }}
                         </x-nav-link>
                     </div>
+                @endif
+
+                @php $user = Auth::user(); @endphp
+                @if ($user->role === 'almacenista')
+
                 @endif
 
              
@@ -51,10 +57,6 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Perfil') }}
-                        </x-dropdown-link>
-
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
