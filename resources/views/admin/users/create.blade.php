@@ -8,7 +8,7 @@
         <form method="POST" action="{{ route('admin.users.store') }}" class="space-y-4">
             @csrf
 
-        <!-- Name -->
+        <!-- Nombre -->
         <div>
             <x-input-label for="name" :value="__('Nombre')" />
             <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
@@ -16,7 +16,7 @@
         </div>
 
 
-        <!-- Email Address -->
+        <!-- Email -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('Correo')" />
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
@@ -60,7 +60,7 @@
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
-        <!-- Confirm Password -->
+        <!-- Confirmar Password -->
         <div class="mt-4">
             <x-input-label for="password_confirmation" :value="__('Confrimar Contraseña')" />
 
@@ -77,6 +77,12 @@
                     {{ __('Guardar Usuario') }}
                 </x-primary-button>
             </div><br>
+
+            <div class="flex items-center justify-center space-x-4">
+                <a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                    {{ __('Cancelar') }}
+                </a><br>
+            </div>
         </form>
     </div>
 </x-app-layout>

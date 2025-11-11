@@ -58,7 +58,7 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                                    Borrar
+                                                    Eliminar
                                                 </button>
                                             </form>
                                         </div>
@@ -76,11 +76,6 @@
                     </table>
                 </div>
             </div>
-
-            <div class="mt-4">
-                 {{-- $users->links() --}}
-            </div>
-
         </div>
     </div>
 </x-app-layout>
