@@ -8,7 +8,7 @@
         <form method="POST" action="{{ route('admin.users.store') }}" class="space-y-4">
             @csrf
 
-        <!-- Name -->
+        <!-- Nombre -->
         <div>
             <x-input-label for="name" :value="__('Nombre')" />
             <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
@@ -16,7 +16,7 @@
         </div>
 
 
-        <!-- Email Address -->
+        <!-- Email -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('Correo')" />
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
@@ -60,7 +60,7 @@
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
-        <!-- Confirm Password -->
+        <!-- Confirmar Password -->
         <div class="mt-4">
             <x-input-label for="password_confirmation" :value="__('Confrimar Contraseña')" />
 

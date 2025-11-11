@@ -9,7 +9,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Hace que 'role' sea obligatorio y sin valor por defecto
             $table->string('role')->nullable(false)->default(null)->change();
         });
     }

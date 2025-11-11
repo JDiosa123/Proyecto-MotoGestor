@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ClienteController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -28,6 +29,13 @@ Route::middleware('auth')->group(function () {
      Route::patch('/admin/users/{user}/status', [UserController::class, 'toggleStatus'])
           ->name('admin.users.toggleStatus');
 
+      // Administración de clientes (CRUD completo)
+    Route::get('/admin/clientes', [ClienteController::class, 'index'])->name('admin.clientes.index');
+    Route::get('/admin/clientes/create', [ClienteController::class, 'create'])->name('admin.clientes.create');
+    Route::post('/admin/clientes', [ClienteController::class, 'store'])->name('admin.clientes.store');
+    Route::get('/admin/clientes/{cliente}/edit', [ClienteController::class, 'edit'])->name('admin.clientes.edit');
+    Route::put('/admin/clientes/{cliente}', [ClienteController::class, 'update'])->name('admin.clientes.update');
+    Route::delete('/admin/clientes/{cliente}', [ClienteController::class, 'destroy'])->name('admin.clientes.destroy'); 
 });
 
 require __DIR__.'/auth.php';
