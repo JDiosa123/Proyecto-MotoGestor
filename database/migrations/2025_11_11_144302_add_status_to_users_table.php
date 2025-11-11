@@ -9,21 +9,19 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-              $table->string('role')->nullable(false)->change();
+            $table->enum('status', ['activo', 'inactivo'])
+                  ->default('activo')
+                  ->after('role'); // o después de la columna que quieras
         });
     }
 
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            $table->dropColumn('status');
         });
     }
 };
