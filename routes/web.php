@@ -5,31 +5,27 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\InventarioController;
+use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\AuthController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
-// === AUTENTICACIÓN ===
+// === Autenticacino ===
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// === DASHBOARD PRINCIPAL ===
+// === Dashboard principal ===
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// === RUTAS PROTEGIDAS POR AUTENTICACIÓN ===
+// === Rutas protegidas por la autenticacion ===
 Route::middleware('auth')->group(function () {
 
-    // --- Perfil ---
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    // --- Gestión de Usuarios (Admin) ---
+    // --- Gestión de usuarios ---
     Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
     Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
     Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
@@ -38,7 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
     Route::patch('/admin/users/{user}/status', [UserController::class, 'toggleStatus'])->name('admin.users.toggleStatus');
 
-    // --- Gestión de Clientes ---
+    // --- Gestión de clientes ---
     Route::get('/admin/clientes', [ClienteController::class, 'index'])->name('admin.clientes.index');
     Route::get('/admin/clientes/create', [ClienteController::class, 'create'])->name('admin.clientes.create');
     Route::post('/admin/clientes', [ClienteController::class, 'store'])->name('admin.clientes.store');
@@ -46,12 +42,15 @@ Route::middleware('auth')->group(function () {
     Route::put('/admin/clientes/{cliente}', [ClienteController::class, 'update'])->name('admin.clientes.update');
     Route::delete('/admin/clientes/{cliente}', [ClienteController::class, 'destroy'])->name('admin.clientes.destroy');
 
-    // --- INVENTARIO ---
+    // --- Gestión de inventario ---
     Route::get('/almacen', [InventarioController::class, 'index'])->name('inventario.index');
     Route::post('/almacen/registrar', [InventarioController::class, 'registrarMovimiento'])->name('inventario.registrar');
-    Route::get('/almacen/editar/{id}', [InventarioController::class, 'editar'])->name('inventario.editar');
-    Route::put('/almacen/actualizar/{id}', [InventarioController::class, 'actualizar'])->name('inventario.actualizar');
-    Route::delete('/almacen/eliminar/{id}', [InventarioController::class, 'eliminar'])->name('inventario.eliminar');
+
+    // --- Gestión de productos ---
+    Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
+    Route::get('/productos/{id}/editar', [ProductoController::class, 'editar'])->name('productos.editar');
+    Route::put('/productos/{id}', [ProductoController::class, 'actualizar'])->name('productos.actualizar');
+    Route::delete('/productos/{id}', [ProductoController::class, 'eliminar'])->name('productos.eliminar');
 });
 
 require __DIR__.'/auth.php';

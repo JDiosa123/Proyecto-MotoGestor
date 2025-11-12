@@ -4,10 +4,9 @@
             {{ __('Clientes') }}
         </h2>
     </x-slot>
-
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
+            
             <div class="flex justify-end mb-4">
                 <a href="{{ route('admin.clientes.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                     Crear Cliente
@@ -22,6 +21,12 @@
 
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="overflow-x-auto">
+
+                    {{-- Encabezado de la Tarjeta --}}
+                    <div class="p-6 bg-gray-700 text-white font-semibold text-lg sm:rounded-t-lg">
+                        <h4>Gestionar Clientes</h4>
+                    </div>
+
                     <table class="w-full table-auto divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-50 dark:bg-gray-700">
                             <tr>
@@ -64,7 +69,6 @@
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
 </x-app-layout>

@@ -18,10 +18,6 @@
                 </div>
 
                 @php $user = Auth::user(); @endphp
-
-                {{-- ================================================
-                    🔹 OPCIONES DEL ADMINISTRADOR
-                ================================================= --}}
                 @if ($user->role === 'admin')
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                         <x-nav-link :href="route('admin.clientes.index')" :active="request()->routeIs('admin.clientes.*')">
@@ -40,22 +36,25 @@
                             {{ __('Inventario') }}
                         </x-nav-link>
                     </div>
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('productos.index')" :active="request()->routeIs('productos.*')">
+                            {{ __('Productos') }}
+                        </x-nav-link>
+                    </div>
                 @endif
 
-                {{-- ================================================
-                    🔹 OPCIONES DEL ALMACENISTA
-                ================================================= --}}
                 @if ($user->role === 'almacenista')
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                         <x-nav-link :href="route('inventario.index')" :active="request()->routeIs('inventario.*')">
                             {{ __('Inventario') }}
                         </x-nav-link>
                     </div>
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('productos.index')" :active="request()->routeIs('productos.*')">
+                            {{ __('Productos') }}
+                        </x-nav-link>
+                    </div>
                 @endif
-
-                {{-- ================================================
-                    🔹 OPCIONES DEL MECÁNICO
-                ================================================= --}}
                 @if ($user->role === 'mecanico')
 
                 @endif
@@ -139,9 +138,6 @@
             </div>
 
             <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Perfil') }}
-                </x-responsive-nav-link>
 
                 <!-- Logout -->
                 <form method="POST" action="{{ route('logout') }}">

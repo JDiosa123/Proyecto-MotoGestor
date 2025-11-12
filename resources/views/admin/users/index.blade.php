@@ -22,6 +22,12 @@
 
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="overflow-x-auto">
+
+                    {{-- Encabezado de la Tarjeta --}}
+                    <div class="p-6 bg-gray-700 text-white font-semibold text-lg sm:rounded-t-lg">
+                        <h4>Gestionar Usuarios</h4>
+                    </div>
+
                     <table class="w-full table-auto divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-50 dark:bg-gray-700">
                             <tr>
