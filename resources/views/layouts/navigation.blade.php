@@ -18,10 +18,14 @@
                 </div>
 
                 @php $user = Auth::user(); @endphp
+
+                {{-- ================================================
+                    🔹 OPCIONES DEL ADMINISTRADOR
+                ================================================= --}}
                 @if ($user->role === 'admin')
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                        <x-nav-link :href="route('admin.clientes.index')" :active="request()->routeIs('clientes.*')">
-                        {{ __('Clientes') }}
+                        <x-nav-link :href="route('admin.clientes.index')" :active="request()->routeIs('admin.clientes.*')">
+                            {{ __('Clientes') }}
                         </x-nav-link>
                     </div>
 
@@ -30,15 +34,31 @@
                             {{ __('Usuarios') }}
                         </x-nav-link>
                     </div>
+
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('inventario.index')" :active="request()->routeIs('inventario.*')">
+                            {{ __('Inventario') }}
+                        </x-nav-link>
+                    </div>
                 @endif
 
-                @php $user = Auth::user(); @endphp
+                {{-- ================================================
+                    🔹 OPCIONES DEL ALMACENISTA
+                ================================================= --}}
                 @if ($user->role === 'almacenista')
-
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('inventario.index')" :active="request()->routeIs('inventario.*')">
+                            {{ __('Inventario') }}
+                        </x-nav-link>
+                    </div>
                 @endif
 
-             
+                {{-- ================================================
+                    🔹 OPCIONES DEL MECÁNICO
+                ================================================= --}}
+                @if ($user->role === 'mecanico')
 
+                @endif
             </div>
 
             <!-- Settings Dropdown -->
@@ -89,6 +109,26 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+
+            @if ($user->role === 'admin')
+                <x-responsive-nav-link :href="route('admin.clientes.index')" :active="request()->routeIs('admin.clientes.*')">
+                    {{ __('Clientes') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                    {{ __('Usuarios') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('inventario.index')" :active="request()->routeIs('inventario.*')">
+                    {{ __('Inventario') }}
+                </x-responsive-nav-link>
+            @elseif ($user->role === 'almacenista')
+                <x-responsive-nav-link :href="route('inventario.index')" :active="request()->routeIs('inventario.*')">
+                    {{ __('Inventario') }}
+                </x-responsive-nav-link>
+            @elseif ($user->role === 'mecanico')
+                <x-responsive-nav-link :href="route('mecanico.dashboard')" :active="request()->routeIs('mecanico.*')">
+                    {{ __('Panel Mecánico') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
@@ -100,17 +140,16 @@
 
             <div class="mt-3 space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
+                    {{ __('Perfil') }}
                 </x-responsive-nav-link>
 
-                <!-- Authentication -->
+                <!-- Logout -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-
                     <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault();
                                         this.closest('form').submit();">
-                        {{ __('Log Out') }}
+                        {{ __('Cerrar Sesión') }}
                     </x-responsive-nav-link>
                 </form>
             </div>
