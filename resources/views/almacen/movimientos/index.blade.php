@@ -7,7 +7,7 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {{-- Mensajes de Sesión --}}
+
             @if(session('success'))
                 <div class="mb-4 p-3 bg-green-200 text-green-800 rounded-md dark:bg-green-800 dark:text-green-200">
                     {{ session('success') }}
@@ -19,7 +19,6 @@
                 </div>
             @endif
 
-            {{-- Card: Registrar Movimiento --}}
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg mb-6">
                 <div class="p-6 bg-blue-600 text-white font-semibold text-lg sm:rounded-t-lg">
                     Registrar movimiento
@@ -28,26 +27,22 @@
                     <form method="POST" action="{{ route('inventario.registrar') }}">
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-                            
-                            {{-- Producto --}}
+
                             <div class="col-span-full md:col-span-3">
                                 <label for="producto_nombre" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Producto</label>
                                 <input id="producto_nombre" type="text" name="producto_nombre" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" placeholder="Nombre del producto" required>
                             </div>
 
-                            {{-- Categoría --}}
                             <div class="col-span-full md:col-span-2">
                                 <label for="categoria" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Categoría</label>
                                 <input id="categoria" type="text" name="categoria" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" placeholder="Ej: Motor, Aceite">
                             </div>
 
-                            {{-- Precio --}}
                             <div class="col-span-full md:col-span-2">
                                 <label for="precio" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Precio</label>
                                 <input id="precio" type="number" name="precio" step="0.01" min="0" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" placeholder="Ej: 25000">
                             </div>
 
-                            {{-- Tipo --}}
                             <div class="col-span-full md:col-span-2">
                                 <label for="tipo" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Tipo</label>
                                 <select id="tipo" name="tipo" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
@@ -56,19 +51,16 @@
                                 </select>
                             </div>
 
-                            {{-- Cantidad --}}
                             <div class="col-span-full md:col-span-1">
                                 <label for="cantidad" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Cant.</label>
                                 <input id="cantidad" type="number" name="cantidad" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" min="1" required>
                             </div>
-                            
-                            {{-- Descripción --}}
+
                             <div class="col-span-full md:col-span-2">
                                 <label for="descripcion" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Descripción</label>
                                 <input id="descripcion" type="text" name="descripcion" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" placeholder="Opcional">
                             </div>
 
-                            {{-- Botón de Enviar --}}
                             <div class="col-span-full mt-3 text-right">
                                 <button type="submit" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     Registrar
@@ -79,7 +71,6 @@
                 </div>
             </div>
 
-            {{-- Card: Historial de Movimientos (Tabla) --}}
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-gray-700 text-white font-semibold text-lg sm:rounded-t-lg">
                     Historial de Movimientos
@@ -95,7 +86,6 @@
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Tipo</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Cantidad</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Descripción</th>
-                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -113,22 +103,6 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">{{ $mov->cantidad }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">{{ $mov->descripcion }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <div class="flex justify-end items-center space-x-2">
-                                            {{-- Botón Editar --}}
-                                            <a href="{{ route('inventario.editar', $mov->id_movimiento) }}" class="inline-flex items-center px-3 py-1.5 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                                Editar
-                                            </a>
-                                            {{-- Formulario Eliminar --}}
-                                            <form action="{{ route('inventario.eliminar', $mov->id_movimiento) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar este movimiento?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                                    Eliminar
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
                                 </tr>
                             @empty
                                 <tr>
