@@ -7,6 +7,7 @@ use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MotoController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -42,6 +43,14 @@ Route::middleware('auth')->group(function () {
     Route::put('/admin/clientes/{cliente}', [ClienteController::class, 'update'])->name('admin.clientes.update');
     Route::delete('/admin/clientes/{cliente}', [ClienteController::class, 'destroy'])->name('admin.clientes.destroy');
 
+    Route::get('admin/motos', [MotoController::class, 'index'])->name('admin.motos.index');
+    Route::get('admin/motos/create/{cliente?}', [MotoController::class, 'create'])->name('admin.motos.create');
+    Route::post('admin/motos/{cliente?}', [MotoController::class, 'store'])->name('admin.motos.store');
+    Route::get('admin/motos/{moto}/edit', [MotoController::class, 'edit'])->name('admin.motos.edit');
+    Route::put('admin/motos/{moto}', [MotoController::class, 'update'])->name('admin.motos.update');
+    Route::delete('admin/motos/{moto}', [MotoController::class, 'destroy'])->name('admin.motos.destroy');
+
+
     // --- Gestión de inventario ---
     Route::get('/almacen', [InventarioController::class, 'index'])->name('inventario.index');
     Route::post('/almacen/registrar', [InventarioController::class, 'registrarMovimiento'])->name('inventario.registrar');
@@ -51,6 +60,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/productos/{id}/editar', [ProductoController::class, 'editar'])->name('productos.editar');
     Route::put('/productos/{id}', [ProductoController::class, 'actualizar'])->name('productos.actualizar');
     Route::delete('/productos/{id}', [ProductoController::class, 'eliminar'])->name('productos.eliminar');
+});
+
+Route::get('/api/clientes/{cliente}/motos', function (App\Models\Cliente $cliente) {
+    return $cliente->motos()->get();
 });
 
 require __DIR__.'/auth.php';

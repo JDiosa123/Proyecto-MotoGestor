@@ -2,7 +2,7 @@
 
 /* Fondo degradado interactivo */
 body {
-    overflow: hidden; /* Evita barras de desplazamiento si el gradiente es más grande */
+    overflow: auto; /* Evita barras de desplazamiento si el gradiente es más grande */
 }
 
 .interactive-background {

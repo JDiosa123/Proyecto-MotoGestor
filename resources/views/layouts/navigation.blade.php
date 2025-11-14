@@ -10,11 +10,6 @@
                 </div>
                 @php $user = Auth::user(); @endphp
                 @if ($user->role === 'admin')
-                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                        <x-nav-link :href="route('admin.clientes.index')" :active="request()->routeIs('admin.clientes.*')">
-                            {{ __('Clientes') }}
-                        </x-nav-link>
-                    </div>
 
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
@@ -22,6 +17,18 @@
                         </x-nav-link>
                     </div>
 
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('admin.clientes.index')" :active="request()->routeIs('admin.clientes.*')">
+                            {{ __('Clientes') }}
+                        </x-nav-link>
+                    </div>
+                    
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('admin.motos.index')" :active="request()->routeIs('admin.motos.*')">
+                            {{ __('Motos') }}
+                        </x-nav-link>
+                    </div>
+                    
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                         <x-nav-link :href="route('inventario.index')" :active="request()->routeIs('inventario.*')">
                             {{ __('Inventario') }}

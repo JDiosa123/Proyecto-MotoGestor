@@ -34,6 +34,7 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Apellido</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Teléfono</th>
+                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Motos</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider text-right">Acciones</th>
                             </tr>
                         </thead>
@@ -44,6 +45,17 @@
                                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{{ $cliente->apellido }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{{ $cliente->email }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{{ $cliente->telefono }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                                        @if($cliente->motos->count() > 0)
+                                        @foreach($cliente->motos as $moto)
+                                            <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded mr-1">
+                                                {{ $moto->placa }}
+                                            </span>
+                                        @endforeach
+                                        @else
+                                            <span class="text-gray-400 italic">Sin motos</span>
+                                        @endif
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
                                         <div class="flex justify-end space-x-2">
                                             <a href="{{ route('admin.clientes.edit', $cliente->id_cliente) }}" class="inline-flex items-center px-3 py-1.5 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150">Editar</a>

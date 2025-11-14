@@ -10,14 +10,10 @@ class Cliente extends Model
     protected $primaryKey = 'id_cliente';
     public $timestamps = false;
 
-    protected $fillable = [
-        'nombre',
-        'apellido',
-        'documento',
-        'fecha_nacimiento',
-        'direccion',
-        'ciudad',
-        'telefono',
-        'email'
-    ];
+    protected $fillable = ['nombre', 'apellido', 'documento', 'fecha_nacimiento', 'direccion', 'ciudad', 'telefono', 'email'];
+
+    public function motos()
+    {
+        return $this->hasMany(Moto::class, 'cliente_id', 'id_cliente');
+    }
 }
