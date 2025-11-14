@@ -23,7 +23,7 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'email' => 'required|email|unique:users',
+            'email' => ['required', 'email', 'unique:users', 'regex:/^[A-Za-z0-9._%+-]+@motogestor\.com$/'],
             'password' => 'required|min:6|confirmed',
             'role' => 'required|in:admin,mecanico,almacenista',
             'status' => 'required|in:activo,inactivo',
@@ -49,7 +49,7 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'email' => ['required', 'email', 'unique:users,email,' . $user->id, 'regex:/^[A-Za-z0-9._%+-]+@motogestor\.com$/'],
             'role' => 'required|in:admin,mecanico,almacenista',
             'status' => 'required|in:activo,inactivo',
         ]);

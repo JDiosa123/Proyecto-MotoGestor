@@ -27,7 +27,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email' => ['required', 'string', 'email', 'regex:/^[A-Za-z0-9._%+-]+@motogestor\.com$/'],
             'password' => ['required', 'string'],
         ];
     }
@@ -40,6 +40,24 @@ class LoginRequest extends FormRequest
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
+
+        $user = \App\Models\User::where('email', $this->email)->first();
+
+    if (! $user) {
+        RateLimiter::hit($this->throttleKey());
+
+        throw ValidationException::withMessages([
+            'email' => trans('auth.failed'),
+        ]);
+    }
+
+    if ($user->status === 'inactivo') {
+        RateLimiter::hit($this->throttleKey());
+
+        throw ValidationException::withMessages([
+            'email' => 'Tu cuenta está inactiva. Contacta con el administrador.',
+        ]);
+    }
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
