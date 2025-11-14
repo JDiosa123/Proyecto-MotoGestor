@@ -1,4 +1,4 @@
 {{-- resources/views/components/application-logo.blade.php --}}
-<img src="{{ asset('images/Tuerca.png') }}" 
+<img src="{{ asset('images/Logo2.png') }}" 
      alt="MotoGestor" 
-     class="h-10 w-auto mx-auto">
+     class="h-20 w-25 mx-auto">
