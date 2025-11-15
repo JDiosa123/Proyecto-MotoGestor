@@ -31,10 +31,9 @@
                                 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600
                                 rounded-md shadow-sm"
                                 required>
-                                @foreach ($clientes as $cliente)
-                                    <option value="{{ $cliente->id_cliente }}"
-                                        {{ $cliente->id_cliente == $cita->cliente_id ? 'selected' : '' }}>
-                                        {{ $cliente->nombre }} {{ $cliente->apellido }}
+                                @foreach($clientes as $cliente)
+                                    <option value="{{ $cliente->id_cliente }}" {{ old('cliente_id') == $cliente->id_cliente ? 'selected' : '' }}>
+                                        C.C {{ $cliente->documento }} - {{ $cliente->nombre }}  {{ $cliente->apellido }}
                                     </option>
                                 @endforeach
                             </select>

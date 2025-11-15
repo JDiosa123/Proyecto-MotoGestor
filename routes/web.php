@@ -60,19 +60,16 @@ Route::middleware('auth')->group(function () {
     Route::put('admin/motos/{moto}', [MotoController::class, 'update'])->name('admin.motos.update');
     Route::delete('admin/motos/{moto}', [MotoController::class, 'destroy'])->name('admin.motos.destroy');
 
-// --- Gestión de citas ---
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/citas', [CitaController::class, 'index'])->name('citas.index');
-    Route::get('/citas/create', [CitaController::class, 'create'])->name('citas.create');
-    Route::post('/citas', [CitaController::class, 'store'])->name('citas.store');
-    Route::get('/citas/{id_cita}/edit', [CitaController::class, 'edit'])->name('citas.edit');
-    Route::put('/citas/{id_cita}', [CitaController::class, 'update'])->name('citas.update');
-    Route::delete('/citas/{id_cita}', [CitaController::class, 'destroy'])->name('citas.destroy');
-});
+    // --- Gestión de citas ---
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/citas', [CitaController::class, 'index'])->name('citas.index');
+        Route::get('/citas/create', [CitaController::class, 'create'])->name('citas.create');
+        Route::post('/citas', [CitaController::class, 'store'])->name('citas.store');
+        Route::get('/citas/{id_cita}/edit', [CitaController::class, 'edit'])->name('citas.edit');
+        Route::put('/citas/{id_cita}', [CitaController::class, 'update'])->name('citas.update');
+        Route::delete('/citas/{id_cita}', [CitaController::class, 'destroy'])->name('citas.destroy');
+    });
 
-
-
-    // --- Gestión de inventario ---
     /* --- Gestión de inventario --- */
     Route::get('/almacen', [InventarioController::class, 'index'])->name('inventario.index');
     Route::post('/almacen/registrar', [InventarioController::class, 'registrarMovimiento'])->name('inventario.registrar');
@@ -84,41 +81,30 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/productos/{id}', [ProductoController::class, 'eliminar'])->name('productos.eliminar');
 });
 
-/* ============================
-        API
-============================ */
 Route::get('/api/clientes/{cliente}/motos', function (App\Models\Cliente $cliente) {
     return $cliente->motos()->get();
 });
 
-/* ============================
-        INVENTARIO GENERAL
-============================ */
+
 Route::get('/inventario', [InventarioController::class, 'index'])->name('inventario.index');
 
 /* --- Salidas --- */
 Route::get('/inventario/salidas', [InventarioController::class, 'salidas'])->name('inventario.salidas');
 Route::post('/inventario/salidas/guardar', [InventarioController::class, 'guardarSalida'])->name('inventario.salidas.guardar');
 
-/* ============================
-        ENTRADAS (CORREGIDO)
-============================ */
+
 Route::prefix('almacen/entradas')->group(function () {
     Route::get('/', [EntradasController::class, 'index'])->name('entradas.index');
     Route::get('/crear', [EntradasController::class, 'create'])->name('entradas.create');
     Route::post('/guardar', [EntradasController::class, 'store'])->name('entradas.store');
 });
 
-/* ============================
-        AUTH EXTRA
-============================ */
+
 require __DIR__.'/auth.php';
 use App\Http\Controllers\SalidasController;
 
 Route::prefix('inventario/salidas')->group(function () {
-
-    Route::get('/', [SalidasController::class, 'index'])->name('salidas.index');   // LISTADO
-    Route::get('/crear', [SalidasController::class, 'create'])->name('salidas.create'); // FORMULARIO
-    Route::post('/guardar', [SalidasController::class, 'store'])->name('salidas.store'); // GUARDAR
-
+    Route::get('/', [SalidasController::class, 'index'])->name('salidas.index');
+    Route::get('/crear', [SalidasController::class, 'create'])->name('salidas.create'); 
+    Route::post('/guardar', [SalidasController::class, 'store'])->name('salidas.store'); 
 });

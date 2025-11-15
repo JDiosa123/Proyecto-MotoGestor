@@ -29,7 +29,7 @@
                                 <option value="">{{ __('Seleccione un cliente') }}</option>
                                 @foreach($clientes as $cliente)
                                     <option value="{{ $cliente->id_cliente }}" {{ old('cliente_id') == $cliente->id_cliente ? 'selected' : '' }}>
-                                        {{ $cliente->documento }} - {{ $cliente->nombre }}  {{ $cliente->apellido }}
+                                        C.C {{ $cliente->documento }} - {{ $cliente->nombre }}  {{ $cliente->apellido }}
                                     </option>
                                 @endforeach
                             </select>
