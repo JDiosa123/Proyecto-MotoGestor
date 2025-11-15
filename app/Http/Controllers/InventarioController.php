@@ -11,74 +11,112 @@ class InventarioController extends Controller
 {
 
     public function index()
-    {
+{
+    
+    $productos = Producto::orderBy('nombre')->get();
 
+    
+    $movimientos = MovimientoInventario::with('producto')
+        ->orderBy('fecha', 'desc')
+        ->get();
+
+    
+    return view('almacen.movimientos.index', compact('productos', 'movimientos'));
+}
+
+    public function entradas()
+    {
         $productos = Producto::orderBy('nombre')->get();
 
         $movimientos = MovimientoInventario::with('producto')
+            ->where('tipo', 'entrada')
             ->orderBy('fecha', 'desc')
             ->get();
 
-        return view('almacen.movimientos.index', compact('productos', 'movimientos'));
+        return view('almacen.entradas.index', compact('productos', 'movimientos'));
     }
 
-    public function productos()
-    {
-        $productos = Producto::where('cantidad', '>', 0)
-            ->orderBy('nombre')
-            ->get();
 
-        return view('almacen.productos.index', compact('productos'));
-    }
-
-    public function registrarMovimiento(Request $request)
+    
+    public function guardarEntrada(Request $request)
     {
         $request->validate([
-            'producto_nombre' => 'required|string|max:255',
-            'categoria' => 'nullable|string|max:255',
-            'precio' => 'nullable|integer|min:0',
-            'tipo' => 'required|in:entrada,salida',
-            'cantidad' => 'required|integer|min:1',
+            'nombre'     => 'required|string|max:255|unique:producto,nombre',
+            'categoria'  => 'required|string|in:Insumos,Repuestos,Otros',
+            'precio'     => 'required|integer|min:0',
+            'cantidad'   => 'required|integer|min:1',
+            'descripcion'=> 'nullable|string|max:255',
+        ]);
+
+        
+        $producto = Producto::create([
+            'nombre'         => $request->nombre,
+            'categoria'      => $request->categoria,
+            'precio'         => $request->precio,
+            'cantidad'       => $request->cantidad,
+            'fecha_registro' => now(),
+            'user_id'        => Auth::id(),
+        ]);
+
+        
+        MovimientoInventario::create([
+            'id_producto' => $producto->id_producto,
+            'tipo'        => 'entrada',
+            'cantidad'    => $request->cantidad,
+            'descripcion' => $request->descripcion,
+            'user_id'     => Auth::id(),
+            'fecha'       => now(),
+        ]);
+
+        return back()->with('success', 'Entrada registrada correctamente.');
+    }
+
+
+
+    
+    public function salidas()
+    {
+        $productos = Producto::orderBy('nombre')->get();
+
+        $movimientos = MovimientoInventario::with('producto')
+            ->where('tipo', 'salida')
+            ->orderBy('fecha', 'desc')
+            ->get();
+
+        return view('almacen.salidas.index', compact('productos', 'movimientos'));
+    }
+
+
+    
+    public function guardarSalida(Request $request)
+    {
+        $request->validate([
+            'id_producto' => 'required|exists:producto,id_producto',
+            'cantidad'    => 'required|integer|min:1',
             'descripcion' => 'nullable|string|max:255',
         ]);
 
-        $producto = Producto::firstOrCreate(
-            ['nombre' => $request->producto_nombre],
-            [
-                'categoria' => $request->categoria,
-                'precio' => $request->precio ?? 0,
-                'cantidad' => 0,
-                'fecha_registro' => now(),
-                'user_id' => Auth::id(),
-            ]
-        );
+        $producto = Producto::find($request->id_producto);
 
-        if ($request->filled('categoria') && $producto->categoria != $request->categoria) {
-            $producto->categoria = $request->categoria;
+        if ($producto->cantidad < $request->cantidad) {
+            return back()->with('error', 'No hay suficiente stock para esta salida.');
         }
 
-        if ($request->tipo === 'entrada') {
-            $producto->cantidad += $request->cantidad;
-        } else {
-            if ($producto->cantidad < $request->cantidad) {
-                return back()->with('error', 'No hay suficiente stock disponible.');
-            }
-            $producto->cantidad -= $request->cantidad;
-        }
-
+        
+        $producto->cantidad -= $request->cantidad;
         $producto->save();
 
+        
         MovimientoInventario::create([
             'id_producto' => $producto->id_producto,
-            'tipo' => $request->tipo,
-            'cantidad' => $request->cantidad,
+            'tipo'        => 'salida',
+            'cantidad'    => $request->cantidad,
             'descripcion' => $request->descripcion,
-            'user_id' => Auth::id(),
-            'fecha' => now(),
+            'user_id'     => Auth::id(),
+            'fecha'       => now(),
         ]);
 
-        return redirect()
-            ->route('inventario.index')
-            ->with('success', 'Movimiento registrado correctamente.');
+        return back()->with('success', 'Salida registrada correctamente.');
     }
+
 }
