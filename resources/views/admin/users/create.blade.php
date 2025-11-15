@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h1 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Crear Nuevo Usuario') }}
+            {{ __('Registrar Nuevo Usuario') }}
         </h1>
     </x-slot>
 
@@ -13,7 +13,7 @@
                 
                 {{-- Encabezado de la Tarjeta --}}
                 <div class="p-6 bg-gray-700 text-white font-semibold text-lg sm:rounded-t-lg">
-                    <h4>{{ __('Formulario de Creación de Usuario') }}</h4>
+                    <h4>{{ __('Formulario de Registro de Usuario') }}</h4>
                 </div>
 
                 {{-- Cuerpo del Formulario --}}

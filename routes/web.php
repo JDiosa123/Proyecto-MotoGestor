@@ -8,6 +8,7 @@ use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MotoController;
+use App\Http\Controllers\CitaController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -43,12 +44,24 @@ Route::middleware('auth')->group(function () {
     Route::put('/admin/clientes/{cliente}', [ClienteController::class, 'update'])->name('admin.clientes.update');
     Route::delete('/admin/clientes/{cliente}', [ClienteController::class, 'destroy'])->name('admin.clientes.destroy');
 
+    // --- Gestión de motos ---
     Route::get('admin/motos', [MotoController::class, 'index'])->name('admin.motos.index');
     Route::get('admin/motos/create/{cliente?}', [MotoController::class, 'create'])->name('admin.motos.create');
     Route::post('admin/motos/{cliente?}', [MotoController::class, 'store'])->name('admin.motos.store');
     Route::get('admin/motos/{moto}/edit', [MotoController::class, 'edit'])->name('admin.motos.edit');
     Route::put('admin/motos/{moto}', [MotoController::class, 'update'])->name('admin.motos.update');
     Route::delete('admin/motos/{moto}', [MotoController::class, 'destroy'])->name('admin.motos.destroy');
+
+// --- Gestión de citas ---
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/citas', [CitaController::class, 'index'])->name('citas.index');
+    Route::get('/citas/create', [CitaController::class, 'create'])->name('citas.create');
+    Route::post('/citas', [CitaController::class, 'store'])->name('citas.store');
+    Route::get('/citas/{id_cita}/edit', [CitaController::class, 'edit'])->name('citas.edit');
+    Route::put('/citas/{id_cita}', [CitaController::class, 'update'])->name('citas.update');
+    Route::delete('/citas/{id_cita}', [CitaController::class, 'destroy'])->name('citas.destroy');
+});
+
 
 
     // --- Gestión de inventario ---

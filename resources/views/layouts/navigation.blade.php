@@ -12,20 +12,8 @@
                 @if ($user->role === 'admin')
 
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                            {{ __('Usuarios') }}
-                        </x-nav-link>
-                    </div>
-
-                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                        <x-nav-link :href="route('admin.clientes.index')" :active="request()->routeIs('admin.clientes.*')">
-                            {{ __('Clientes') }}
-                        </x-nav-link>
-                    </div>
-                    
-                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                        <x-nav-link :href="route('admin.motos.index')" :active="request()->routeIs('admin.motos.*')">
-                            {{ __('Motos') }}
+                        <x-nav-link :href="route('admin.citas.index')" :active="request()->routeIs('admin.citas.*')">
+                            {{ __('Citas') }}
                         </x-nav-link>
                     </div>
                     
@@ -34,9 +22,28 @@
                             {{ __('Inventario') }}
                         </x-nav-link>
                     </div>
+
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                         <x-nav-link :href="route('productos.index')" :active="request()->routeIs('productos.*')">
                             {{ __('Productos') }}
+                        </x-nav-link>
+                    </div>
+            
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('admin.motos.index')" :active="request()->routeIs('admin.motos.*')">
+                            {{ __('Motos') }}
+                        </x-nav-link>
+                    </div>
+
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('admin.clientes.index')" :active="request()->routeIs('admin.clientes.*')">
+                            {{ __('Clientes') }}
+                        </x-nav-link>
+                    </div>
+                
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                            {{ __('Usuarios') }}
                         </x-nav-link>
                     </div>
                 @endif 
@@ -54,6 +61,13 @@
                     </div>
                 @endif
                 @if ($user->role === 'mecanico')
+                <!-- nvar mecanico-->
+
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('admin.citas.index')" :active="request()->routeIs('admin.citas.*')">
+                            {{ __('Citas') }}
+                        </x-nav-link>
+                    </div>
 
                 @endif
             </div>
@@ -122,7 +136,7 @@
                     {{ __('Inventario') }}
                 </x-responsive-nav-link>
             @elseif ($user->role === 'mecanico')
-                <x-responsive-nav-link :href="route('mecanico.dashboard')" :active="request()->routeIs('mecanico.*')">
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('mecanico.*')">
                     {{ __('Panel Mecánico') }}
                 </x-responsive-nav-link>
             @endif
