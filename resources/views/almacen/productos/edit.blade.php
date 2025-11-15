@@ -4,6 +4,7 @@
             {{ __('Editar Producto') }}
         </h2>
     </x-slot>
+
     <div class="py-6">
         <div class="max-w-xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
@@ -16,10 +17,17 @@
                         @csrf
                         @method('PUT')
 
+                        
                         <div class="mb-4">
                             <label for="nombre" class="block font-medium text-sm text-gray-700 dark:text-gray-300">Nombre</label>
-                            <input id="nombre" type="text" name="nombre" value="{{ old('nombre', $producto->nombre) }}" required
-                                class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+
+                            
+                            <input type="hidden" name="nombre" value="{{ $producto->nombre }}">
+
+                            
+                            <input id="nombre" type="text" value="{{ $producto->nombre }}" 
+                                disabled
+                                class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
                         </div>
 
                         <div class="mb-4">
