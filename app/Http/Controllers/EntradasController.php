@@ -43,16 +43,20 @@ class EntradasController extends Controller
                 'categoria' => $request->categoria,
                 'precio' => $request->precio,
                 'cantidad' => 0,
+                'descripcion' => $request->descripcion,
                 'fecha_registro' => now(),
                 'user_id' => Auth::id()
-            ]);
-        } else {
-            
-            $producto->categoria = $request->categoria;
-            $producto->precio = $request->precio;
+        ]);
+    } else {
+        if ($request->descripcion) {
+            $producto->descripcion = $request->descripcion;
         }
 
-        
+        $producto->categoria = $request->categoria;
+        $producto->precio = $request->precio;
+
+    }
+      
         $producto->cantidad += $request->cantidad;
         $producto->save();
 
@@ -67,14 +71,14 @@ class EntradasController extends Controller
 
     
         
-MovimientoInventario::create([
-    'id_producto' => $producto->id_producto,
-    'tipo' => 'entrada',
-    'cantidad' => $request->cantidad,
-    'descripcion' => $request->descripcion,
-    'fecha' => now(),
-    'user_id' => auth()->id(), 
-]);
+    MovimientoInventario::create([
+        'id_producto' => $producto->id_producto,
+        'tipo' => 'entrada',
+        'cantidad' => $request->cantidad,
+        'descripcion' => $request->descripcion,
+        'fecha' => now(),
+        'user_id' => auth()->id(), 
+    ]);
 
 
 

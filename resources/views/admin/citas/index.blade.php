@@ -66,7 +66,7 @@
                                     {{-- Cliente --}}
                                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
                                         <div class="font-medium text-gray-900 dark:text-gray-100">{{ $cita->cliente->nombre }} {{ $cita->cliente->apellido }}</div> {{-- Nombre más destacado --}}
-                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ $cita->cliente->documento }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400"> C.C {{ $cita->cliente->documento }}</div>
                                     </td>
 
                                     {{-- Moto --}}

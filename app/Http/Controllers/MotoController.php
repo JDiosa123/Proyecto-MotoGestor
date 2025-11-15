@@ -10,7 +10,6 @@ class MotoController extends Controller
 {
     public function index(Cliente $cliente = null)
     {
-        // Si se pasa un cliente por ruta, mostramos solo sus motos; si no, todas
         if ($cliente) {
             $motos = Moto::where('cliente_id', $cliente->id_cliente)->get();
         } else {
@@ -22,7 +21,7 @@ class MotoController extends Controller
 
     public function create(Cliente $cliente = null)
     {
-        // Pasamos lista de clientes para el select (si $cliente no viene)
+
         $clientes = $cliente ? collect([$cliente]) : Cliente::all();
         return view('admin.motos.create', compact('clientes', 'cliente'));
     }
