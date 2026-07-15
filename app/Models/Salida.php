@@ -2,16 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Salida extends Model
 {
     use HasFactory;
 
     protected $table = 'salidas';
-
-    protected $primaryKey = 'id_salida';
 
     protected $fillable = [
         'id_producto',
@@ -21,10 +20,23 @@ class Salida extends Model
         'fecha',
     ];
 
-    public $timestamps = false; 
-    
+    protected $casts = [
+        'cantidad' => 'integer',
+        'fecha' => 'date',
+    ];
+
     public function producto()
     {
-        return $this->belongsTo(Producto::class, 'id_producto', 'id_producto');
+        return $this->belongsTo(Producto::class, 'id_producto', 'id');
+    }
+
+    public function creador()
+    {
+        return $this->belongsTo(User::class, 'creado_por');
+    }
+
+    public function scopeRecientes(Builder $query): Builder
+    {
+        return $query->orderByDesc('fecha');
     }
 }

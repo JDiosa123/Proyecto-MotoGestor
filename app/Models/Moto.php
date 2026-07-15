@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Moto extends Model
 {
+    use HasFactory;
+
     protected $table = 'motos';
-    protected $primaryKey = 'id_moto';
-    public $incrementing = true;
-    protected $keyType = 'int';
 
     protected $fillable = [
         'cliente_id',
@@ -20,15 +21,27 @@ class Moto extends Model
         'color',
     ];
 
-    // Relación al cliente (tu tabla y PK personalizados)
+    protected $casts = [
+        'cilindraje' => 'integer',
+    ];
+
     public function cliente()
     {
-        return $this->belongsTo(Cliente::class, 'cliente_id', 'id_cliente');
+        return $this->belongsTo(Cliente::class, 'cliente_id');
     }
 
-    // Relación con citas si luego la implementas
     public function citas()
     {
-        return $this->hasMany(Cita::class, 'moto_id', 'id_moto');
+        return $this->hasMany(Cita::class, 'moto_id');
+    }
+
+    public function scopeMarca(Builder $query, string $marca): Builder
+    {
+        return $query->where('marca', $marca);
+    }
+
+    public function scopeColor(Builder $query, string $color): Builder
+    {
+        return $query->where('color', $color);
     }
 }

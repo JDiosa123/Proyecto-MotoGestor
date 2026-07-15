@@ -3,13 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\ClienteController;
-use App\Http\Controllers\InventarioController;
-use App\Http\Controllers\ProductoController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\MotoController;
-use App\Http\Controllers\CitaController;
-use App\Http\Controllers\EntradasController;
+use App\Http\Controllers\Clientes\ClienteController;
+use App\Http\Controllers\Inventario\InventarioController;
+use App\Http\Controllers\Almacen\ProductoController;
+use App\Http\Controllers\Motos\MotoController;
+use App\Http\Controllers\Clientes\CitaController;
+use App\Http\Controllers\Almacen\EntradasController;
+use App\Http\Controllers\Almacen\SalidasController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -18,9 +18,7 @@ Route::get('/', function () {
 /* ============================
         AUTENTICACIÓN
 ============================ */
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+// La autenticación se carga desde routes/auth.php.
 
 /* ============================
         DASHBOARD PRINCIPAL
@@ -101,7 +99,6 @@ Route::prefix('almacen/entradas')->group(function () {
 
 
 require __DIR__.'/auth.php';
-use App\Http\Controllers\SalidasController;
 
 Route::prefix('inventario/salidas')->group(function () {
     Route::get('/', [SalidasController::class, 'index'])->name('salidas.index');

@@ -1,7 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Clientes;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreClienteRequest;
+use App\Http\Requests\UpdateClienteRequest;
 use App\Models\Cliente;
 use Illuminate\Http\Request;
 
@@ -20,16 +23,9 @@ class ClienteController extends Controller
         return view('admin.clientes.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreClienteRequest $request)
     {
-        $request->validate([
-            'nombre' => 'required',
-            'apellido' => 'required',
-            'email' => 'nullable|email|unique:cliente,email',
-            'documento' => 'nullable|unique:cliente,documento',
-        ]);
-
-        Cliente::create($request->all());
+        Cliente::create($request->validated());
 
         return redirect()->route('admin.clientes.index')->with('success', 'Cliente creado correctamente.');
     }
@@ -39,16 +35,9 @@ class ClienteController extends Controller
         return view('admin.clientes.edit', compact('cliente'));
     }
 
-    public function update(Request $request, Cliente $cliente)
+    public function update(UpdateClienteRequest $request, Cliente $cliente)
     {
-        $request->validate([
-            'nombre' => 'required',
-            'apellido' => 'required',
-            'email' => 'nullable|email|unique:cliente,email,' . $cliente->id_cliente . ',id_cliente',
-            'documento' => 'nullable|unique:cliente,documento,' . $cliente->id_cliente . ',id_cliente',
-        ]);
-
-        $cliente->update($request->all());
+        $cliente->update($request->validated());
 
         return redirect()->route('admin.clientes.index')->with('success', 'Cliente actualizado correctamente.');
     }

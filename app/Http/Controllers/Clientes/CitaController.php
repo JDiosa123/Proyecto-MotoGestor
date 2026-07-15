@@ -1,7 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Clientes;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreCitaRequest;
+use App\Http\Requests\UpdateCitaRequest;
 use App\Models\Cita;
 use App\Models\Cliente;
 use App\Models\Moto;
@@ -34,20 +37,14 @@ class CitaController extends Controller
     /**
      * Guardar cita en la BD
      */
-    public function store(Request $request)
+    public function store(StoreCitaRequest $request)
     {
-        $request->validate([
-            'cliente_id' => 'required|exists:cliente,id_cliente',
-            'moto_id' => 'required|exists:motos,id_moto',
-            'mecanico_id' => 'required|exists:users,id',
-            'fecha' => 'required|date',
-            'hora' => 'required',
-        ]);
+        $data = $request->validated();
 
         // 1️ Validar disponibilidad del mecánico
-        $existeMecanico = Cita::where('mecanico_id', $request->mecanico_id)
-            ->where('fecha', $request->fecha)
-            ->where('hora', $request->hora)
+        $existeMecanico = Cita::where('mecanico_id', $data['mecanico_id'])
+            ->where('fecha', $data['fecha'])
+            ->where('hora', $data['hora'])
             ->exists();
 
         if ($existeMecanico) {
@@ -57,9 +54,9 @@ class CitaController extends Controller
         }
 
         // 2 Validar que el cliente no tenga cita duplicada
-        $existeCliente = Cita::where('cliente_id', $request->cliente_id)
-            ->where('fecha', $request->fecha)
-            ->where('hora', $request->hora)
+        $existeCliente = Cita::where('cliente_id', $data['cliente_id'])
+            ->where('fecha', $data['fecha'])
+            ->where('hora', $data['hora'])
             ->exists();
 
         if ($existeCliente) {
@@ -70,11 +67,11 @@ class CitaController extends Controller
 
         // 3 Registrar la cita
         Cita::create([
-            'cliente_id' => $request->cliente_id,
-            'moto_id' => $request->moto_id,
-            'mecanico_id' => $request->mecanico_id,
-            'fecha' => $request->fecha,
-            'hora' => $request->hora,
+            'cliente_id' => $data['cliente_id'],
+            'moto_id' => $data['moto_id'],
+            'mecanico_id' => $data['mecanico_id'],
+            'fecha' => $data['fecha'],
+            'hora' => $data['hora'],
             'estado' => 'Agendada',
         ]);
 
@@ -98,22 +95,16 @@ class CitaController extends Controller
     /**
      * Actualizar cita
      */
-    public function update(Request $request, $id)
+    public function update(UpdateCitaRequest $request, $id)
     {
         $cita = Cita::findOrFail($id);
 
-        $request->validate([
-            'cliente_id' => 'required',
-            'moto_id' => 'required',
-            'mecanico_id' => 'required',
-            'fecha' => 'required',
-            'hora' => 'required',
-        ]);
+        $data = $request->validated();
 
         // Validar disponibilidad mecánico
-        $existeMecanico = Cita::where('mecanico_id', $request->mecanico_id)
-            ->where('fecha', $request->fecha)
-            ->where('hora', $request->hora)
+        $existeMecanico = Cita::where('mecanico_id', $data['mecanico_id'])
+            ->where('fecha', $data['fecha'])
+            ->where('hora', $data['hora'])
             ->where('id_cita', '!=', $id)
             ->exists();
 
@@ -122,9 +113,9 @@ class CitaController extends Controller
         }
 
         // Validar disponibilidad cliente
-        $existeCliente = Cita::where('cliente_id', $request->cliente_id)
-            ->where('fecha', $request->fecha)
-            ->where('hora', $request->hora)
+        $existeCliente = Cita::where('cliente_id', $data['cliente_id'])
+            ->where('fecha', $data['fecha'])
+            ->where('hora', $data['hora'])
             ->where('id_cita', '!=', $id)
             ->exists();
 
@@ -132,7 +123,7 @@ class CitaController extends Controller
             return back()->with('error', 'El cliente ya tiene una cita a esa hora.')->withInput();
         }
 
-        $cita->update($request->all());
+        $cita->update($data);
 
         return redirect()->route('admin.citas.index')->with('success', 'Cita actualizada.');
     }
