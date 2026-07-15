@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Almacen;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Entrada;
 use App\Models\Producto;

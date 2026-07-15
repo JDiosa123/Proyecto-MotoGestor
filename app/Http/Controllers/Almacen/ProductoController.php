@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Almacen;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateProductoRequest;
 use Illuminate\Http\Request;
 use App\Models\Producto;
 
@@ -19,25 +21,11 @@ class ProductoController extends Controller
         return view('almacen.productos.edit', compact('producto'));
     }
 
-    public function actualizar(Request $request, $id)
+    public function actualizar(UpdateProductoRequest $request, $id)
     {
         $producto = Producto::findOrFail($id);
 
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'categoria' => 'nullable|string|max:255',
-            'precio' => 'required|integer|min:0',
-            'cantidad' => 'required|integer|min:0',
-            'descripcion' => 'nullable|string|max:255',
-        ]);
-
-        $producto->update([
-            'nombre' => $request->nombre,
-            'categoria' => $request->categoria,
-            'precio' => $request->precio,
-            'cantidad' => $request->cantidad,
-            'descripcion' => $request->descripcion,
-        ]);
+        $producto->update($request->validated());
 
         return redirect()->route('productos.index')->with('success', 'Producto actualizado correctamente.');
     }
