@@ -22,7 +22,7 @@ class UpdateUserRequest extends FormRequest
                 Rule::unique('users', 'email')->ignore($this->route('user')),
                 'regex:/^[A-Za-z0-9._%+-]+@motogestor\.com$/',
             ],
-            'role' => ['required', Rule::in(['admin', 'mecanico', 'almacenista'])],
+            'role' => ['required', Rule::in(['admin'])],
             'status' => ['required', Rule::in(['activo', 'inactivo'])],
         ];
     }

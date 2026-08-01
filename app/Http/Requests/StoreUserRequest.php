@@ -23,7 +23,7 @@ class StoreUserRequest extends FormRequest
                 'regex:/^[A-Za-z0-9._%+-]+@motogestor\.com$/',
             ],
             'password' => ['required', 'confirmed', 'min:8', 'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).+$/'],
-            'role' => ['required', Rule::in(['admin', 'mecanico', 'almacenista'])],
+            'role' => ['required', Rule::in(['admin'])],
             'status' => ['required', Rule::in(['activo', 'inactivo'])],
         ];
     }

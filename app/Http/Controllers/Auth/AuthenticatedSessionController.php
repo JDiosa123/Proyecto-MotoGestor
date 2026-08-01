@@ -32,15 +32,12 @@ class AuthenticatedSessionController extends Controller
         // Obtener el usuario autenticado
         $user = auth()->user();
 
-        // Redirigir según el rol
-        switch ($user->role) {
-            case 'Admin':
-                return redirect()->route('dashboard'); // o 'admin.dashboard' si tienes una vista separada
-            case 'Almacenista':
-                return redirect()->route('almacen.dashboard');
-            default:
-                return redirect()->route('dashboard');
+        // Redirigir al panel principal del administrador
+        if ($user->role === 'admin') {
+            return redirect()->route('dashboard');
         }
+
+        return redirect()->route('dashboard');
     }
 
     /**
@@ -54,6 +51,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('login');
+        return redirect('/');
     }
 }

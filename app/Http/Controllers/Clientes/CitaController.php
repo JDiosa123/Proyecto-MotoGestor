@@ -29,7 +29,7 @@ class CitaController extends Controller
     public function create()
     {
         $clientes = Cliente::all();
-        $mecanicos = User::where('role', 'mecanico')->get(); // si usas rol en tabla users
+        $mecanicos = User::all();
 
         return view('admin.citas.create', compact('clientes', 'mecanicos'));
     }
@@ -86,7 +86,7 @@ class CitaController extends Controller
     {
         $cita = Cita::findOrFail($id);
         $clientes = Cliente::all();
-        $mecanicos = User::where('role', 'mecanico')->get();
+        $mecanicos = User::all();
         $motos = Moto::where('cliente_id', $cita->cliente_id)->get();
 
         return view('admin.citas.edit', compact('cita', 'clientes', 'mecanicos', 'motos'));
