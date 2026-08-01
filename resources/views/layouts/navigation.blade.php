@@ -14,7 +14,7 @@
 
                 <!-- Desktop Navigation -->
                 <div class="hidden sm:flex sm:ms-10 space-x-6">
-                    @if ($user->role === 'admin')
+                    @if (($user?->role ?? 'admin') === 'admin')
 
                         <x-nav-link :href="route('admin.citas.index')" :active="request()->routeIs('admin.citas.*')"
                             class="text-white hover:text-[#3b82f6]">
@@ -44,25 +44,6 @@
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')"
                             class="text-white hover:text-[#3b82f6]">
                             Usuarios
-                        </x-nav-link>
-
-                    @elseif ($user->role === 'almacenista')
-
-                        <x-nav-link :href="route('inventario.index')" :active="request()->routeIs('inventario.*')"
-                            class="text-white hover:text-[#3b82f6]">
-                            Inventario
-                        </x-nav-link>
-
-                        <x-nav-link :href="route('productos.index')" :active="request()->routeIs('productos.*')"
-                            class="text-white hover:text-[#3b82f6]">
-                            Productos
-                        </x-nav-link>
-
-                    @elseif ($user->role === 'mecanico')
-
-                        <x-nav-link :href="route('admin.citas.index')" :active="request()->routeIs('admin.citas.*')"
-                            class="text-white hover:text-[#3b82f6]">
-                            Citas
                         </x-nav-link>
 
                     @endif
@@ -125,7 +106,7 @@
     <div :class="{'block': open, 'hidden': !open}" class="hidden sm:hidden bg-gray-700 border-t border-gray-600">
         <div class="pt-2 pb-3 space-y-1">
 
-            @if ($user->role === 'admin')
+            @if (($user?->role ?? 'admin') === 'admin')
                 <x-responsive-nav-link :href="route('admin.citas.index')" class="text-white hover:bg-gray-600 hover:text-[#3b82f6]">
                     Citas
                 </x-responsive-nav-link>
@@ -148,22 +129,6 @@
 
                 <x-responsive-nav-link :href="route('admin.users.index')" class="text-white hover:bg-gray-600 hover:text-[#3b82f6]">
                     Usuarios
-                </x-responsive-nav-link>
-
-            @elseif ($user->role === 'almacenista')
-
-                <x-responsive-nav-link :href="route('inventario.index')" class="text-white hover:bg-gray-600 hover:text-[#3b82f6]">
-                    Inventario
-                </x-responsive-nav-link>
-
-                <x-responsive-nav-link :href="route('productos.index')" class="text-white hover:bg-gray-600 hover:text-[#3b82f6]">
-                    Productos
-                </x-responsive-nav-link>
-
-            @elseif ($user->role === 'mecanico')
-
-                <x-responsive-nav-link :href="route('admin.citas.index')" class="text-white hover:bg-gray-600 hover:text-[#3b82f6]">
-                    Citas
                 </x-responsive-nav-link>
 
             @endif

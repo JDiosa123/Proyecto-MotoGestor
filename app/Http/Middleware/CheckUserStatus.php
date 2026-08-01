@@ -10,9 +10,6 @@ class CheckUserStatus
 {
     public function handle(Request $request, Closure $next)
     {
-        dd('middleware OK', Auth::user()->fresh()->status);
-
-        // Verifica si el usuario está autenticado
         if (Auth::check()) {
 
             // Recarga el usuario desde la base de datos
