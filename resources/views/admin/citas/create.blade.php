@@ -18,10 +18,16 @@
 
                 {{-- Cuerpo del Formulario --}}
                 <div class="p-6">
-                    <form method="POST" action="{{ route('admin.citas.store') }}" class="space-y-6">
+                    <form method="POST" action="{{ ($esCliente ?? false) ? route('mis-citas.store') : route('admin.citas.store') }}" class="space-y-6">
                         @csrf
 
                         {{-- Cliente --}}
+                        @if ($esCliente ?? false)
+                            <input type="hidden" id="cliente_id" name="cliente_id" value="{{ $clientes->first()->id }}">
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Cliente: {{ $clientes->first()->nombre }} {{ $clientes->first()->apellido }}
+                            </p>
+                        @else
                         <div>
                             <x-input-label for="cliente_id" :value="__('Cliente')" />
                             {{-- Se utiliza un select nativo, aplicando las clases de Tailwind de los componentes de entrada --}}
@@ -35,6 +41,7 @@
                             </select>
                             <x-input-error :messages="$errors->get('cliente_id')" class="mt-2" />
                         </div>
+                        @endif
 
                         {{-- Moto --}}
                         <div>
@@ -48,6 +55,7 @@
                         </div>
 
                         {{-- Mecánico --}}
+                        @unless ($esCliente ?? false)
                         <div>
                             <x-input-label for="mecanico_id" :value="__('Mecánico Encargado')" />
                             <select name="mecanico_id" id="mecanico_id" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
@@ -60,6 +68,7 @@
                             </select>
                             <x-input-error :messages="$errors->get('mecanico_id')" class="mt-2" />
                         </div>
+                        @endunless
 
                         <div>
                             <x-input-label for="servicio" :value="__('Servicio solicitado')" />
@@ -95,7 +104,7 @@
                                 {{ __('Agendar Cita') }}
                             </x-primary-button>
 
-                            <a href="{{ route('admin.citas.index') }}" 
+                            <a href="{{ ($esCliente ?? false) ? route('mis-citas.index') : route('admin.citas.index') }}"
                                class="inline-flex items-center px-4 py-2 bg-gray-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-600 focus:bg-gray-600 active:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 {{ __('Cancelar') }}
                             </a>
@@ -106,26 +115,26 @@
         </div>
     </div>
     
-    {{-- La sección de script se mantiene igual, ya que no necesita adaptación de estilo Tailwind --}}
     <script>
-        document.getElementById('cliente_id').addEventListener('change', function () {
-            let clienteId = this.value;
-
-            // Almacenar el valor seleccionado actual antes de la actualización
-            const oldMotoId = '{{ old('moto_id') }}';
+        const clienteField = document.getElementById('cliente_id');
+        const loadMotos = function () {
+            const motoSelect = document.getElementById('moto_id');
+            if (!clienteField || !motoSelect) {
+                return;
+            }
+            const clienteId = clienteField.value;
+            const oldMotoId = @json(old('moto_id'));
 
             if (!clienteId) {
-                document.getElementById('moto_id').innerHTML = '<option value="">Seleccione un cliente</option>';
+                motoSelect.innerHTML = '<option value="">Seleccione un cliente</option>';
                 return;
             }
 
-            // Llamada AJAX para obtener las motos
             fetch(`/api/clientes/${clienteId}/motos`)
                 .then(response => response.json())
                 .then(data => {
-                    let motoSelect = document.getElementById('moto_id');
                     motoSelect.innerHTML = '';
-                    motoSelect.disabled = false; // Habilitar si hay datos
+                    motoSelect.disabled = false;
 
                     if (data.length === 0) {
                         motoSelect.innerHTML = '<option value="">No hay motos registradas para este cliente</option>';
@@ -133,7 +142,6 @@
                         return;
                     }
 
-                    // Agregar una opción inicial
                     motoSelect.innerHTML = '<option value="">Seleccione una moto</option>';
 
                     data.forEach(moto => {
@@ -147,17 +155,15 @@
                 })
                 .catch(error => {
                     console.error('Error al cargar motos:', error);
-                    let motoSelect = document.getElementById('moto_id');
                     motoSelect.innerHTML = '<option value="">Error al cargar las motos</option>';
                 });
         });
 
-        // Simular el evento 'change' en la carga inicial si hay un old('cliente_id')
-        document.addEventListener('DOMContentLoaded', function() {
-            const clienteIdField = document.getElementById('cliente_id');
-            if (clienteIdField.value && '{{ old("moto_id") }}') {
-                clienteIdField.dispatchEvent(new Event('change'));
-            }
-        });
+        if (clienteField?.tagName === 'SELECT') {
+            clienteField.addEventListener('change', loadMotos);
+        }
+        if (clienteField?.value) {
+            loadMotos();
+        }
     </script>
 </x-app-layout>

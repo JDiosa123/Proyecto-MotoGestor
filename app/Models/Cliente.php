@@ -13,7 +13,7 @@ class Cliente extends Model
 
     protected $table = 'clientes';
 
-    protected $fillable = ['nombre', 'apellido', 'documento', 'fecha_nacimiento', 'direccion', 'ciudad', 'telefono', 'email'];
+    protected $fillable = ['user_id', 'nombre', 'apellido', 'documento', 'fecha_nacimiento', 'direccion', 'ciudad', 'telefono', 'email'];
 
     protected $casts = [
         'fecha_nacimiento' => 'date',
@@ -22,6 +22,11 @@ class Cliente extends Model
     public function motos()
     {
         return $this->hasMany(Moto::class, 'cliente_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function scopeSearch(Builder $query, ?string $term): Builder

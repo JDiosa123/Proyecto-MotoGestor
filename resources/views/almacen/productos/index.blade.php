@@ -7,6 +7,13 @@
 
     <div class="py-4">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            @if (in_array(Auth::user()->role, [\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_STOREKEEPER], true))
+                <div class="flex justify-end mb-4">
+                    <a href="{{ route('productos.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md text-xs font-semibold uppercase">
+                        Crear producto
+                    </a>
+                </div>
+            @endif
             {{-- Mensajes de Sesión (Éxito) --}}
             @if(session('success'))
                 <div class="mb-4 p-3 bg-green-200 text-green-800 rounded-md dark:bg-green-800 dark:text-green-200 font-medium">
@@ -75,7 +82,10 @@
 
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
                                         <div class="flex justify-end space-x-2">
-                                            {{-- Botón Eliminar --}}
+                                            @if (in_array(Auth::user()->role, [\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_STOREKEEPER], true))
+                                            <a href="{{ route('productos.editar', $producto->id) }}" class="inline-flex items-center px-3 py-1.5 bg-yellow-500 text-white rounded-md text-xs font-semibold uppercase">
+                                                Editar
+                                            </a>
                                             <form action="{{ route('productos.eliminar', $producto->id) }}"
                                                     method="POST"
                                                     onsubmit="return confirm('¿Seguro que deseas eliminar este producto?');">
@@ -86,6 +96,7 @@
                                                     Eliminar
                                                 </button>
                                             </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
