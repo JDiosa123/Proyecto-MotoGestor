@@ -79,19 +79,45 @@
                         {{-- Campos de Contraseña (Opcional) --}}
                         <div>
                             <x-input-label for="password" :value="__('Nueva Contraseña (Opcional)')" />
-                            <x-text-input id="password" class="block mt-1 w-full"
-                                type="password"
-                                name="password"
-                                autocomplete="new-password" />
+                            <div class="mt-1 flex">
+                                <x-text-input id="password" class="block w-full rounded-r-none"
+                                    type="password"
+                                    name="password"
+                                    autocomplete="new-password" />
+                                <button type="button" data-password-toggle="password"
+                                    aria-label="Mostrar contraseña" aria-pressed="false"
+                                    class="rounded-r-md border border-l-0 border-gray-300 bg-gray-100 px-3 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-200">
+                                    Mostrar
+                                </button>
+                            </div>
+                            <div id="password-requirements" class="{{ old('password') ? '' : 'hidden' }} mt-3 space-y-2 text-sm" aria-live="polite">
+                                <p class="font-medium text-gray-700 dark:text-gray-200">Requisitos de contraseña</p>
+                                <ul class="space-y-1">
+                                    <li data-password-rule="length" class="text-gray-500"><span aria-hidden="true">✗</span> Al menos 8 caracteres</li>
+                                    <li data-password-rule="uppercase" class="text-gray-500"><span aria-hidden="true">✗</span> Una letra mayúscula</li>
+                                    <li data-password-rule="lowercase" class="text-gray-500"><span aria-hidden="true">✗</span> Una letra minúscula</li>
+                                    <li data-password-rule="number" class="text-gray-500"><span aria-hidden="true">✗</span> Un número</li>
+                                    <li data-password-rule="special" class="text-gray-500"><span aria-hidden="true">✗</span> Un carácter especial (@$!%*?&)</li>
+                                </ul>
+                                <p>Seguridad de la contraseña: <span id="password-strength" class="font-semibold text-red-600">Débil</span></p>
+                            </div>
                             <x-input-error :messages="$errors->get('password')" class="mt-2" />
                         </div>
 
                         <div>
                             <x-input-label for="password_confirmation" :value="__('Confirmar Nueva Contraseña')" />
-                            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                                type="password"
-                                name="password_confirmation" 
-                                autocomplete="new-password" />
+                            <div class="mt-1 flex">
+                                <x-text-input id="password_confirmation" class="block w-full rounded-r-none"
+                                    type="password"
+                                    name="password_confirmation"
+                                    autocomplete="new-password" />
+                                <button type="button" data-password-toggle="password_confirmation"
+                                    aria-label="Mostrar confirmación de contraseña" aria-pressed="false"
+                                    class="rounded-r-md border border-l-0 border-gray-300 bg-gray-100 px-3 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-200">
+                                    Mostrar
+                                </button>
+                            </div>
+                            <p id="password-match" class="mt-2 text-sm text-gray-500 {{ old('password') ? '' : 'hidden' }}" aria-live="polite">Escribe ambas contraseñas para comprobar si coinciden.</p>
                             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
                         </div>
 
@@ -115,5 +141,68 @@
         document.getElementById('role').addEventListener('change', function () {
             document.getElementById('cliente-field').classList.toggle('hidden', this.value !== 'cliente');
         });
+
+        (() => {
+            const password = document.getElementById('password');
+            const confirmation = document.getElementById('password_confirmation');
+            const requirements = document.getElementById('password-requirements');
+            const strength = document.getElementById('password-strength');
+            const matchMessage = document.getElementById('password-match');
+
+            const updatePasswordFeedback = () => {
+                const value = password.value;
+                const checks = {
+                    length: [...value].length >= 8,
+                    uppercase: /[A-Z]/.test(value),
+                    lowercase: /[a-z]/.test(value),
+                    number: /\d/.test(value),
+                    special: /[@$!%*?&]/.test(value),
+                };
+                const hasPassword = value.length > 0;
+
+                requirements.classList.toggle('hidden', !hasPassword);
+                matchMessage.classList.toggle('hidden', !hasPassword && !confirmation.value);
+
+                Object.entries(checks).forEach(([rule, passed]) => {
+                    const item = document.querySelector(`[data-password-rule="${rule}"]`);
+                    item.classList.toggle('text-green-600', passed);
+                    item.classList.toggle('text-red-600', hasPassword && !passed);
+                    item.classList.toggle('text-gray-500', !hasPassword);
+                    item.querySelector('span').textContent = passed ? '✓' : '✗';
+                });
+
+                const score = Object.values(checks).filter(Boolean).length;
+                strength.textContent = score >= 5 ? 'Fuerte' : score >= 3 ? 'Media' : 'Débil';
+                strength.classList.toggle('text-green-600', score >= 5);
+                strength.classList.toggle('text-yellow-600', score >= 3 && score < 5);
+                strength.classList.toggle('text-red-600', score < 3);
+
+                if (!confirmation.value) {
+                    matchMessage.textContent = 'Escribe ambas contraseñas para comprobar si coinciden.';
+                    matchMessage.className = 'mt-2 text-sm text-gray-500';
+                } else if (value === confirmation.value) {
+                    matchMessage.textContent = '✓ Las contraseñas coinciden.';
+                    matchMessage.className = 'mt-2 text-sm text-green-600';
+                } else {
+                    matchMessage.textContent = '✗ Las contraseñas no coinciden.';
+                    matchMessage.className = 'mt-2 text-sm text-red-600';
+                }
+            };
+
+            password.addEventListener('input', updatePasswordFeedback);
+            confirmation.addEventListener('input', updatePasswordFeedback);
+            document.querySelectorAll('[data-password-toggle]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    const input = document.getElementById(button.dataset.passwordToggle);
+                    const visible = input.type === 'password';
+                    input.type = visible ? 'text' : 'password';
+                    button.textContent = visible ? 'Ocultar' : 'Mostrar';
+                    button.setAttribute('aria-pressed', String(visible));
+                    button.setAttribute('aria-label', `${visible ? 'Ocultar' : 'Mostrar'} ${input.id === 'password' ? 'contraseña' : 'confirmación de contraseña'}`);
+                });
+            });
+
+            updatePasswordFeedback();
+        })();
     </script>
 </x-app-layout>

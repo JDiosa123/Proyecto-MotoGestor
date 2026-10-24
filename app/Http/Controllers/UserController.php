@@ -44,7 +44,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $clientes = Cliente::whereNull('user_id')
-            ->orWhereKey($user->cliente?->id)
+            ->orWhere('id', $user->cliente?->id)
             ->orderBy('nombre')
             ->get();
 
