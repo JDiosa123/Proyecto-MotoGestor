@@ -50,7 +50,8 @@
                             {{-- Se asegura que el campo de fecha mantenga los estilos de dark mode --}}
                             <x-text-input id="fecha_nacimiento" 
                                 class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" 
-                                type="date" name="fecha_nacimiento" :value="old('fecha_nacimiento', $cliente->fecha_nacimiento)" required />
+                                type="date" name="fecha_nacimiento"
+                                :value="old('fecha_nacimiento', optional($cliente->fecha_nacimiento)->format('Y-m-d'))" required />
                             <x-input-error :messages="$errors->get('fecha_nacimiento')" class="mt-2" />
                         </div>
 

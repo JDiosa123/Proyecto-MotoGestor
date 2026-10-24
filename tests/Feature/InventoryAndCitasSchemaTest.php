@@ -89,15 +89,22 @@ class InventoryAndCitasSchemaTest extends TestCase
             'cliente_id' => $cliente->id,
             'moto_id' => $moto->id,
             'mecanico_id' => null,
+            'fecha' => '2026-11-10',
+            'hora' => '14:35:00',
         ]);
         $producto = Producto::factory()->create();
 
         $this->actingAs($user);
 
+        $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $cita->fecha);
+        $this->get(route('admin.citas.edit', $cita))
+            ->assertOk()
+            ->assertSee('value="2026-11-10"', false)
+            ->assertSee('value="14:35"', false);
+
         foreach ([
             route('admin.citas.index'),
             route('admin.citas.create'),
-            route('admin.citas.edit', $cita),
             route('inventario.index'),
             route('entradas.index'),
             route('salidas.index'),

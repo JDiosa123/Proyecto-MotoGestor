@@ -43,6 +43,9 @@
                                     {{ __('Moto') }}
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    {{ __('Servicio') }}
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     {{ __('Mecánico') }}
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -53,6 +56,9 @@
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     {{ __('Estado') }}
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    {{ __('Motivo') }}
                                 </th>
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"> {{-- text-right para consistencia con 'Motos' --}}
                                     {{ __('Acciones') }}
@@ -75,6 +81,11 @@
                                         <div class="text-xs text-gray-500 dark:text-gray-400">{{ $cita->moto?->marca }} {{ $cita->moto?->modelo }} @if ($cita->moto?->color) ({{ $cita->moto->color }}) @endif</div>
                                     </td>
 
+                                    {{-- Servicio --}}
+                                    <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                                        {{ filled($cita->servicio) ? $cita->servicio : '-' }}
+                                    </td>
+
                                     {{-- Mecánico --}}
                                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
                                         {{ $cita->mecanico?->name ?? 'Sin asignar' }}
@@ -94,16 +105,27 @@
                                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
                                         @php
                                             $estadoClases = [
-                                                'solicitada' => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-                                                'aceptada' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-                                                'atendida' => 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
-                                                'cancelada' => 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-100',
+                                                'solicitada' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
+                                                'aceptada' => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+                                                'atendida' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+                                                'cancelada' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
                                             ];
                                             $claseEstado = $estadoClases[$cita->estado];
                                         @endphp
                                         <span class="px-3 py-1 text-xs rounded-full font-semibold {{ $claseEstado }}">
                                             {{ ucfirst($cita->estado) }}
                                         </span>
+                                    </td>
+
+                                    {{-- Motivo de cancelación --}}
+                                    <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                                        @if ($cita->estado === 'cancelada' && filled($cita->motivo_cancelacion))
+                                            <span title="{{ $cita->motivo_cancelacion }}">
+                                                {{ \Illuminate\Support\Str::limit($cita->motivo_cancelacion, 40) }}
+                                            </span>
+                                        @else
+                                            -
+                                        @endif
                                     </td>
 
                                     {{-- Acciones (Alineación a la derecha y estilo adaptado del código 'Motos') --}}
@@ -131,8 +153,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    {{-- Colspan ajustado a 8 (columnas de datos) + 1 (acciones) = 9 --}}
-                                    <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                                    <td colspan="9" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                                         {{ __('No hay citas registradas.') }}
                                     </td>
                                 </tr>

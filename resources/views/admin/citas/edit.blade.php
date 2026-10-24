@@ -90,7 +90,7 @@
                             <x-input-label for="fecha" :value="__('Fecha')" />
                             <x-text-input id="fecha" type="date" name="fecha"
                                 class="block mt-1 w-full dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700"
-                                :value="$cita->fecha" required />
+                                :value="old('fecha', optional($cita->fecha)->format('Y-m-d'))" required />
                             <x-input-error :messages="$errors->get('fecha')" class="mt-2" />
                         </div>
 
@@ -99,7 +99,7 @@
                             <x-input-label for="hora" :value="__('Hora')" />
                             <x-text-input id="hora" type="time" name="hora"
                                 class="block mt-1 w-full"
-                                :value="$cita->hora" required />
+                                :value="old('hora', substr($cita->hora, 0, 5))" required />
                             <x-input-error :messages="$errors->get('hora')" class="mt-2" />
                         </div>
 
@@ -119,12 +119,17 @@
                             <x-input-error :messages="$errors->get('estado')" class="mt-2" />
                         </div>
 
-                        <div>
+                        <div id="motivo-cancelacion-field" class="{{ old('estado', $cita->estado) === 'cancelada' ? '' : 'hidden' }}">
                             <x-input-label for="motivo_cancelacion" :value="__('Motivo de cancelación')" />
                             <textarea id="motivo_cancelacion" name="motivo_cancelacion" rows="3"
                                 class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">{{ old('motivo_cancelacion', $cita->motivo_cancelacion) }}</textarea>
                             <x-input-error :messages="$errors->get('motivo_cancelacion')" class="mt-2" />
                         </div>
+                        <script>
+                            document.getElementById('estado').addEventListener('change', function () {
+                                document.getElementById('motivo-cancelacion-field').classList.toggle('hidden', this.value !== 'cancelada');
+                            });
+                        </script>
 
                         {{-- BOTONES --}}
                         <div class="flex justify-start space-x-4 pt-4">
