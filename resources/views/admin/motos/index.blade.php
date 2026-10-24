@@ -8,6 +8,7 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
+            @unless ($readonly ?? false)
             <div class="flex justify-end mb-4">
                 {{-- Botón 'Crear Moto' con estilo detallado --}}
                 <a href="{{ route('admin.motos.create') }}"
@@ -15,6 +16,7 @@
                     Registrar Moto
                 </a>
             </div>
+            @endunless
 
             @if(session('success'))
                 <div class="mb-4 p-3 bg-green-200 text-green-800 rounded-md dark:bg-green-800 dark:text-green-200">
@@ -38,7 +40,9 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Marca</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Modelo</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Cliente</th>
+                                @unless ($readonly ?? false)
                                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Acciones</th>
+                                @endunless
                             </tr>
                         </thead>
 
@@ -49,9 +53,10 @@
                                     <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">{{ $moto->placa }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{{ $moto->marca }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{{ $moto->modelo }}</td>
-                                    <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{{ $moto->cliente->nombre }} {{ $moto->cliente->apellido }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{{ $moto->cliente?->nombre }} {{ $moto->cliente?->apellido }}</td>
                                     
                                     {{-- Columna de acciones --}}
+                                    @unless ($readonly ?? false)
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
                                         <div class="flex justify-end space-x-2">
                                             {{-- Botón Editar con estilo detallado --}}
@@ -72,10 +77,11 @@
                                             </form>
                                         </div>
                                     </td>
+                                    @endunless
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                                    <td colspan="{{ ($readonly ?? false) ? 4 : 5 }}" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                                         No hay motos registradas.
                                     </td>
                                 </tr>

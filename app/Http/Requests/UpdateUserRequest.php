@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Models\User;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -22,8 +23,16 @@ class UpdateUserRequest extends FormRequest
                 Rule::unique('users', 'email')->ignore($this->route('user')),
                 'regex:/^[A-Za-z0-9._%+-]+@motogestor\.com$/',
             ],
-            'role' => ['required', Rule::in(['admin'])],
+            'role' => ['required', Rule::in(User::ROLES)],
             'status' => ['required', Rule::in(['activo', 'inactivo'])],
+            'cliente_id' => [
+                'nullable',
+                'required_if:role,'.User::ROLE_CLIENT,
+                Rule::exists('clientes', 'id')->where(function ($query) {
+                    $query->whereNull('user_id')
+                        ->orWhere('user_id', $this->route('user')->id);
+                }),
+            ],
         ];
     }
 

@@ -7,14 +7,23 @@
 
     <div class="py-6"> {{-- Se cambió py-8 por py-6 para consistencia --}}
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            @php
+                $rol = Auth::user()->role;
+            @endphp
 
             {{-- Botón 'Crear Cita' con estilo adaptado --}}
             <div class="flex justify-end mb-4"> {{-- Se cambió mb-6 por mb-4 para consistencia --}}
+                @if (in_array($rol, [\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_ASSISTANT], true))
                 <a href="{{ route('admin.citas.create') }}"
                     class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                     {{-- Se quitó el '+' para coincidir con el estilo del botón 'Crear Moto' --}}
                     Agendar Cita 
                 </a>
+                @elseif ($rol === \App\Models\User::ROLE_CLIENT)
+                    <a href="{{ route('mis-citas.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md text-xs font-semibold uppercase">
+                        Solicitar Cita
+                    </a>
+                @endif
             </div>
 
             {{-- Mensaje de éxito (adaptado del código 'Motos') --}}
@@ -131,23 +140,49 @@
                                     {{-- Acciones (Alineación a la derecha y estilo adaptado del código 'Motos') --}}
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
                                         <div class="flex justify-end space-x-2">
-                                            {{-- Botón Editar con estilo detallado (adaptado de 'Motos') --}}
-                                            <a href="{{ route('admin.citas.edit', $cita->id) }}"
-                                                class="inline-flex items-center px-3 py-1.5 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                                {{ __('Editar') }}
-                                            </a>
+                                            @if (in_array($rol, [\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_ASSISTANT], true))
+                                                <a href="{{ route('admin.citas.edit', $cita->id) }}"
+                                                    class="inline-flex items-center px-3 py-1.5 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                                    {{ __('Editar') }}
+                                                </a>
+                                            @endif
 
-                                            {{-- Formulario y Botón Eliminar con estilo detallado (adaptado de 'Motos') --}}
-                                            <form action="{{ route('admin.citas.destroy', $cita->id) }}"
-                                                method="POST"
-                                                onsubmit="return confirm('{{ __('¿Seguro que deseas eliminar esta cita?') }}');"> {{-- Mensaje de confirmación adaptado --}}
-                                                @csrf
-                                                @method('DELETE')
+                                            @if ($rol === \App\Models\User::ROLE_ADMIN)
+                                                <form action="{{ route('admin.citas.destroy', $cita->id) }}"
+                                                    method="POST"
+                                                    onsubmit="return confirm('{{ __('¿Seguro que deseas eliminar esta cita?') }}');">
+                                                    @csrf
+                                                    @method('DELETE')
 
-                                                <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                                    {{ __('Eliminar') }}
-                                                </button>
-                                            </form>
+                                                    <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                                        {{ __('Eliminar') }}
+                                                    </button>
+                                                </form>
+                                            @endif
+
+                                            @if ($rol === \App\Models\User::ROLE_MECHANIC && !in_array($cita->estado, ['atendida', 'cancelada'], true))
+                                                <form action="{{ route('mecanico.citas.atender', $cita) }}" method="POST">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="px-3 py-1.5 bg-green-600 text-white rounded-md text-xs font-semibold uppercase">
+                                                        Marcar atendida
+                                                    </button>
+                                                </form>
+                                            @elseif ($rol === \App\Models\User::ROLE_CLIENT && !in_array($cita->estado, ['atendida', 'cancelada'], true))
+                                                <form action="{{ route('mis-citas.cancelar', $cita) }}" method="POST" class="space-y-2">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <input name="motivo_cancelacion" required maxlength="1000"
+                                                        value="{{ old('motivo_cancelacion') }}"
+                                                        placeholder="Motivo de cancelación"
+                                                        class="w-48 rounded-md border-gray-300 text-sm dark:bg-gray-900 dark:text-gray-100">
+                                                    <button type="submit" class="px-3 py-1.5 bg-red-600 text-white rounded-md text-xs font-semibold uppercase">
+                                                        Cancelar cita
+                                                    </button>
+                                                </form>
+                                            @elseif (!in_array($rol, [\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_ASSISTANT], true))
+                                                -
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

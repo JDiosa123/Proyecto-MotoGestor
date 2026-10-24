@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use App\Models\User;
 
 class Moto extends Model
 {
@@ -43,5 +44,14 @@ class Moto extends Model
     public function scopeColor(Builder $query, string $color): Builder
     {
         return $query->where('color', $color);
+    }
+
+    public function scopeVisibleTo(Builder $query, User $user): Builder
+    {
+        if ($user->role === User::ROLE_CLIENT) {
+            return $query->whereHas('cliente', fn (Builder $clienteQuery) => $clienteQuery->where('user_id', $user->id));
+        }
+
+        return $query;
     }
 }

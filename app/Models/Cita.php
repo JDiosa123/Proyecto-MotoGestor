@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use App\Models\User;
 
 class Cita extends Model
 {
@@ -51,5 +52,17 @@ class Cita extends Model
     public function scopePorFecha(Builder $query, string $fecha): Builder
     {
         return $query->where('fecha', $fecha);
+    }
+
+    public function scopeVisibleTo(Builder $query, User $user): Builder
+    {
+        return match ($user->role) {
+            User::ROLE_ADMIN, User::ROLE_ASSISTANT => $query,
+            User::ROLE_MECHANIC => $query->where('mecanico_id', $user->id),
+            User::ROLE_CLIENT => $user->cliente
+                ? $query->where('cliente_id', $user->cliente->id)
+                : $query->whereRaw('1 = 0'),
+            default => $query->whereRaw('1 = 0'),
+        };
     }
 }

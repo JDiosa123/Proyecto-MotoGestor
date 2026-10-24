@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Models\User;
 
 class UpdateCitaRequest extends FormRequest
 {
@@ -17,12 +18,17 @@ class UpdateCitaRequest extends FormRequest
         return [
             'cliente_id' => ['required', Rule::exists('clientes', 'id')],
             'moto_id' => ['required', Rule::exists('motos', 'id')->where('cliente_id', $this->input('cliente_id'))],
-            'mecanico_id' => ['nullable', Rule::exists('users', 'id')],
+            'mecanico_id' => ['nullable', Rule::exists('users', 'id')->where('role', User::ROLE_MECHANIC)],
             'fecha' => ['required', 'date'],
             'hora' => ['required', 'date_format:H:i'],
-            'estado' => ['required', Rule::in(['solicitada', 'aceptada', 'cancelada', 'atendida'])],
+            'estado' => [
+                'required',
+                Rule::in($this->user()?->role === User::ROLE_ASSISTANT
+                    ? ['solicitada', 'aceptada', 'cancelada']
+                    : ['solicitada', 'aceptada', 'cancelada', 'atendida']),
+            ],
             'servicio' => ['required', 'string', 'max:255'],
-            'motivo_cancelacion' => ['nullable', 'required_if:estado,cancelada', 'string'],
+            'motivo_cancelacion' => ['nullable', 'required_if:estado,cancelada', 'string', 'max:1000'],
         ];
     }
 

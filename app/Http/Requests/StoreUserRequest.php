@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Models\User;
 
 class StoreUserRequest extends FormRequest
 {
@@ -23,8 +24,13 @@ class StoreUserRequest extends FormRequest
                 'regex:/^[A-Za-z0-9._%+-]+@motogestor\.com$/',
             ],
             'password' => ['required', 'confirmed', 'min:8', 'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).+$/'],
-            'role' => ['required', Rule::in(['admin'])],
+            'role' => ['required', Rule::in(User::ROLES)],
             'status' => ['required', Rule::in(['activo', 'inactivo'])],
+            'cliente_id' => [
+                'nullable',
+                'required_if:role,'.User::ROLE_CLIENT,
+                Rule::exists('clientes', 'id')->whereNull('user_id'),
+            ],
         ];
     }
 

@@ -42,9 +42,25 @@
                             <select id="role" name="role" 
                                 class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" 
                                 required>
-                                <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Administrador</option>
+                                @foreach (\App\Models\User::ROLE_LABELS as $role => $label)
+                                    <option value="{{ $role }}" {{ old('role', $user->role) === $role ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
                             </select>
                             <x-input-error :messages="$errors->get('role')" class="mt-2" />
+                        </div>
+
+                        <div id="cliente-field" class="{{ old('role', $user->role) === \App\Models\User::ROLE_CLIENT ? '' : 'hidden' }}">
+                            <x-input-label for="cliente_id" :value="__('Ficha de cliente')" />
+                            <select id="cliente_id" name="cliente_id"
+                                class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">
+                                <option value="">Seleccionar ficha</option>
+                                @foreach ($clientes as $cliente)
+                                    <option value="{{ $cliente->id }}" {{ old('cliente_id', $user->cliente?->id) == $cliente->id ? 'selected' : '' }}>
+                                        {{ $cliente->documento }} - {{ $cliente->nombre }} {{ $cliente->apellido }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <x-input-error :messages="$errors->get('cliente_id')" class="mt-2" />
                         </div>
 
                         <div>
@@ -95,4 +111,9 @@
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById('role').addEventListener('change', function () {
+            document.getElementById('cliente-field').classList.toggle('hidden', this.value !== 'cliente');
+        });
+    </script>
 </x-app-layout>

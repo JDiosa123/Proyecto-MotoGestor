@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateMotoRequest;
 use Illuminate\Http\Request;
 use App\Models\Moto;
 use App\Models\Cliente;
+use App\Models\User;
 
 class MotoController extends Controller
 {
@@ -20,6 +21,25 @@ class MotoController extends Controller
         }
 
         return view('admin.motos.index', compact('motos', 'cliente'));
+    }
+
+    public function myIndex(Request $request)
+    {
+        abort_unless($request->user()->cliente, 403, 'La cuenta no tiene una ficha de cliente vinculada.');
+
+        $motos = Moto::visibleTo($request->user())->with('cliente')->get();
+        $readonly = true;
+
+        return view('admin.motos.index', compact('motos', 'readonly'));
+    }
+
+    public function motosForCliente(Request $request, Cliente $cliente)
+    {
+        if ($request->user()->role === User::ROLE_CLIENT) {
+            abort_unless($cliente->user_id === $request->user()->id, 404);
+        }
+
+        return $cliente->motos()->get();
     }
 
     public function create(Cliente $cliente = null)

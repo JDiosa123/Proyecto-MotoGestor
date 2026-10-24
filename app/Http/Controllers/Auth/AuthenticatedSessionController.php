@@ -29,14 +29,6 @@ class AuthenticatedSessionController extends Controller
         // Regenera la sesión por seguridad
         $request->session()->regenerate();
 
-        // Obtener el usuario autenticado
-        $user = auth()->user();
-
-        // Redirigir al panel principal del administrador
-        if ($user->role === 'admin') {
-            return redirect()->route('dashboard');
-        }
-
         return redirect()->route('dashboard');
     }
 
