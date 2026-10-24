@@ -9,23 +9,17 @@ use App\Models\Cita;
 use App\Models\Cliente;
 use App\Models\Moto;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Builder;
 
 class CitaController extends Controller
 {
-    /**
-     * Mostrar todas las citas
-     */
     public function index()
     {
-        $citas = Cita::with(['cliente', 'moto', 'mecanico'])->orderBy('fecha', 'desc')->get();
+        $citas = Cita::with(['cliente', 'moto', 'mecanico'])->orderByDesc('fecha')->get();
 
         return view('admin.citas.index', compact('citas'));
     }
 
-    /**
-     * Formulario para crear cita
-     */
     public function create()
     {
         $clientes = Cliente::all();
@@ -34,57 +28,26 @@ class CitaController extends Controller
         return view('admin.citas.create', compact('clientes', 'mecanicos'));
     }
 
-    /**
-     * Guardar cita en la BD
-     */
     public function store(StoreCitaRequest $request)
     {
         $data = $request->validated();
 
-        // 1️ Validar disponibilidad del mecánico
-        $existeMecanico = Cita::where('mecanico_id', $data['mecanico_id'])
-            ->where('fecha', $data['fecha'])
-            ->where('hora', $data['hora'])
-            ->exists();
-
-        if ($existeMecanico) {
+        if ($this->hasScheduleConflict($data)) {
             return back()
-                ->with('error', 'El mecánico ya tiene una cita a esa hora.')
+                ->with('error', 'El mecánico o el cliente ya tiene una cita a esa hora.')
                 ->withInput();
         }
 
-        // 2 Validar que el cliente no tenga cita duplicada
-        $existeCliente = Cita::where('cliente_id', $data['cliente_id'])
-            ->where('fecha', $data['fecha'])
-            ->where('hora', $data['hora'])
-            ->exists();
-
-        if ($existeCliente) {
-            return back()
-                ->with('error', 'El cliente ya tiene una cita a esa hora.')
-                ->withInput();
-        }
-
-        // 3 Registrar la cita
-        Cita::create([
-            'cliente_id' => $data['cliente_id'],
-            'moto_id' => $data['moto_id'],
-            'mecanico_id' => $data['mecanico_id'],
-            'fecha' => $data['fecha'],
-            'hora' => $data['hora'],
-            'estado' => 'Agendada',
+        Cita::create($data + [
+            'estado' => 'solicitada',
+            'motivo_cancelacion' => null,
         ]);
 
         return redirect()->route('admin.citas.index')->with('success', 'Cita agendada correctamente.');
     }
 
-
-    /**
-     * Editar cita
-     */
-    public function edit($id)
+    public function edit(Cita $cita)
     {
-        $cita = Cita::findOrFail($id);
         $clientes = Cliente::all();
         $mecanicos = User::all();
         $motos = Moto::where('cliente_id', $cita->cliente_id)->get();
@@ -92,35 +55,18 @@ class CitaController extends Controller
         return view('admin.citas.edit', compact('cita', 'clientes', 'mecanicos', 'motos'));
     }
 
-    /**
-     * Actualizar cita
-     */
-    public function update(UpdateCitaRequest $request, $id)
+    public function update(UpdateCitaRequest $request, Cita $cita)
     {
-        $cita = Cita::findOrFail($id);
-
         $data = $request->validated();
 
-        // Validar disponibilidad mecánico
-        $existeMecanico = Cita::where('mecanico_id', $data['mecanico_id'])
-            ->where('fecha', $data['fecha'])
-            ->where('hora', $data['hora'])
-            ->where('id_cita', '!=', $id)
-            ->exists();
-
-        if ($existeMecanico) {
-            return back()->with('error', 'El mecánico ya tiene una cita a esa hora.')->withInput();
+        if ($this->hasScheduleConflict($data, $cita)) {
+            return back()
+                ->with('error', 'El mecánico o el cliente ya tiene una cita a esa hora.')
+                ->withInput();
         }
 
-        // Validar disponibilidad cliente
-        $existeCliente = Cita::where('cliente_id', $data['cliente_id'])
-            ->where('fecha', $data['fecha'])
-            ->where('hora', $data['hora'])
-            ->where('id_cita', '!=', $id)
-            ->exists();
-
-        if ($existeCliente) {
-            return back()->with('error', 'El cliente ya tiene una cita a esa hora.')->withInput();
+        if ($data['estado'] !== 'cancelada') {
+            $data['motivo_cancelacion'] = null;
         }
 
         $cita->update($data);
@@ -128,13 +74,40 @@ class CitaController extends Controller
         return redirect()->route('admin.citas.index')->with('success', 'Cita actualizada.');
     }
 
-    /**
-     * Eliminar cita
-     */
-    public function destroy($id)
+    public function destroy(Cita $cita)
     {
-        Cita::findOrFail($id)->delete();
+        $cita->delete();
 
         return back()->with('success', 'Cita eliminada.');
+    }
+
+    private function hasScheduleConflict(array $data, ?Cita $cita = null): bool
+    {
+        if (($data['estado'] ?? null) === 'cancelada') {
+            return false;
+        }
+
+        $conflicts = static function (Builder $query) use ($data, $cita): void {
+            $query->where('fecha', $data['fecha'])
+                ->where('hora', $data['hora'])
+                ->where('estado', '!=', 'cancelada');
+
+            if ($cita) {
+                $query->whereKeyNot($cita->getKey());
+            }
+        };
+
+        $clientConflict = Cita::where('cliente_id', $data['cliente_id'])
+            ->where($conflicts)
+            ->exists();
+
+        if ($clientConflict) {
+            return true;
+        }
+
+        return !empty($data['mecanico_id'])
+            && Cita::where('mecanico_id', $data['mecanico_id'])
+                ->where($conflicts)
+                ->exists();
     }
 }

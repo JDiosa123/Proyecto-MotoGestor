@@ -20,7 +20,7 @@
 
                 {{-- Cuerpo del Formulario --}}
                 <div class="p-6">
-                    <form method="POST" action="{{ route('admin.clientes.update', $cliente->id_cliente) }}" class="space-y-6">
+                    <form method="POST" action="{{ route('admin.clientes.update', $cliente->id) }}" class="space-y-6">
                         @csrf
                         @method('PUT')
 

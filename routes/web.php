@@ -63,14 +63,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/citas', [CitaController::class, 'index'])->name('citas.index');
         Route::get('/citas/create', [CitaController::class, 'create'])->name('citas.create');
         Route::post('/citas', [CitaController::class, 'store'])->name('citas.store');
-        Route::get('/citas/{id_cita}/edit', [CitaController::class, 'edit'])->name('citas.edit');
-        Route::put('/citas/{id_cita}', [CitaController::class, 'update'])->name('citas.update');
-        Route::delete('/citas/{id_cita}', [CitaController::class, 'destroy'])->name('citas.destroy');
+        Route::get('/citas/{cita}/edit', [CitaController::class, 'edit'])->name('citas.edit');
+        Route::put('/citas/{cita}', [CitaController::class, 'update'])->name('citas.update');
+        Route::delete('/citas/{cita}', [CitaController::class, 'destroy'])->name('citas.destroy');
     });
 
     /* --- Gestión de inventario --- */
     Route::get('/almacen', [InventarioController::class, 'index'])->name('inventario.index');
-    Route::post('/almacen/registrar', [InventarioController::class, 'registrarMovimiento'])->name('inventario.registrar');
+    Route::post('/almacen/registrar', [EntradasController::class, 'store'])->name('inventario.registrar');
 
     /* --- Gestión de productos --- */
     Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
@@ -84,14 +84,7 @@ Route::get('/api/clientes/{cliente}/motos', function (App\Models\Cliente $client
 });
 
 
-Route::get('/inventario', [InventarioController::class, 'index'])->name('inventario.index');
-
-/* --- Salidas --- */
-Route::get('/inventario/salidas', [InventarioController::class, 'salidas'])->name('inventario.salidas');
-Route::post('/inventario/salidas/guardar', [InventarioController::class, 'guardarSalida'])->name('inventario.salidas.guardar');
-
-
-Route::prefix('almacen/entradas')->group(function () {
+Route::prefix('almacen/entradas')->middleware('auth')->group(function () {
     Route::get('/', [EntradasController::class, 'index'])->name('entradas.index');
     Route::get('/crear', [EntradasController::class, 'create'])->name('entradas.create');
     Route::post('/guardar', [EntradasController::class, 'store'])->name('entradas.store');
@@ -100,8 +93,8 @@ Route::prefix('almacen/entradas')->group(function () {
 
 require __DIR__.'/auth.php';
 
-Route::prefix('inventario/salidas')->group(function () {
+Route::prefix('inventario/salidas')->middleware('auth')->group(function () {
     Route::get('/', [SalidasController::class, 'index'])->name('salidas.index');
-    Route::get('/crear', [SalidasController::class, 'create'])->name('salidas.create'); 
-    Route::post('/guardar', [SalidasController::class, 'store'])->name('salidas.store'); 
+    Route::get('/crear', [SalidasController::class, 'create'])->name('salidas.create');
+    Route::post('/guardar', [SalidasController::class, 'store'])->name('salidas.store');
 });

@@ -40,16 +40,6 @@ class User extends Authenticatable
         return $this->hasMany(Cita::class, 'mecanico_id');
     }
 
-    public function entradas()
-    {
-        return $this->hasMany(Entrada::class, 'creado_por');
-    }
-
-    public function salidas()
-    {
-        return $this->hasMany(Salida::class, 'creado_por');
-    }
-
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('status', 'activo');
