@@ -16,6 +16,7 @@ class Producto extends Model
         'nombre',
         'categoria',
         'cantidad',
+        'stock_minimo',
         'precio',
         'descripcion',
         'fecha_registro',
@@ -24,6 +25,7 @@ class Producto extends Model
 
     protected $casts = [
         'cantidad' => 'integer',
+        'stock_minimo' => 'integer',
         'precio' => 'decimal:2',
         'fecha_registro' => 'date',
     ];

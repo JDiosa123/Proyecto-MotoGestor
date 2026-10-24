@@ -55,12 +55,12 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
                                         <div class="flex justify-end space-x-2">
                                             {{-- Botón Editar con estilo detallado --}}
-                                            <a href="{{ route('admin.motos.edit', $moto->id_moto) }}"
+                                            <a href="{{ route('admin.motos.edit', $moto->id) }}"
                                                class="inline-flex items-center px-3 py-1.5 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                                 Editar
                                             </a>
 
-                                            <form action="{{ route('admin.motos.destroy', $moto->id_moto) }}"
+                                            <form action="{{ route('admin.motos.destroy', $moto->id) }}"
                                                   method="POST"
                                                   onsubmit="return confirm('¿Seguro que deseas eliminar esta moto?');">
                                                 @csrf

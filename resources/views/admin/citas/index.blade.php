@@ -65,19 +65,19 @@
                                 <tr>
                                     {{-- Cliente --}}
                                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                                        <div class="font-medium text-gray-900 dark:text-gray-100">{{ $cita->cliente->nombre }} {{ $cita->cliente->apellido }}</div> {{-- Nombre más destacado --}}
-                                        <div class="text-xs text-gray-500 dark:text-gray-400"> C.C {{ $cita->cliente->documento }}</div>
+                                        <div class="font-medium text-gray-900 dark:text-gray-100">{{ $cita->cliente?->nombre }} {{ $cita->cliente?->apellido }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400"> C.C {{ $cita->cliente?->documento }}</div>
                                     </td>
 
                                     {{-- Moto --}}
                                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                                        <div class="font-medium text-gray-900 dark:text-gray-100">{{ $cita->moto->placa }}</div> {{-- Placa más destacada --}}
-                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ $cita->moto->marca }} {{ $cita->moto->modelo }} @if ($cita->moto->color) ({{ $cita->moto->color }}) @endif</div>
+                                        <div class="font-medium text-gray-900 dark:text-gray-100">{{ $cita->moto?->placa }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ $cita->moto?->marca }} {{ $cita->moto?->modelo }} @if ($cita->moto?->color) ({{ $cita->moto->color }}) @endif</div>
                                     </td>
 
                                     {{-- Mecánico --}}
                                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                                        {{ $cita->mecanico->name }}
+                                        {{ $cita->mecanico?->name ?? 'Sin asignar' }}
                                     </td>
 
                                     {{-- Fecha --}}
@@ -94,15 +94,15 @@
                                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
                                         @php
                                             $estadoClases = [
-                                                'Pendiente' => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-                                                'En Proceso' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-                                                'Finalizada' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
-                                                'Cancelada' => 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-100',
+                                                'solicitada' => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+                                                'aceptada' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+                                                'atendida' => 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
+                                                'cancelada' => 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-100',
                                             ];
-                                            $claseEstado = $estadoClases[$cita->estado] ?? $estadoClases['Pendiente'];
+                                            $claseEstado = $estadoClases[$cita->estado];
                                         @endphp
                                         <span class="px-3 py-1 text-xs rounded-full font-semibold {{ $claseEstado }}">
-                                            {{ $cita->estado }}
+                                            {{ ucfirst($cita->estado) }}
                                         </span>
                                     </td>
 
@@ -110,13 +110,13 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
                                         <div class="flex justify-end space-x-2">
                                             {{-- Botón Editar con estilo detallado (adaptado de 'Motos') --}}
-                                            <a href="{{ route('admin.citas.edit', $cita->id_cita) }}"
+                                            <a href="{{ route('admin.citas.edit', $cita->id) }}"
                                                 class="inline-flex items-center px-3 py-1.5 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                                 {{ __('Editar') }}
                                             </a>
 
                                             {{-- Formulario y Botón Eliminar con estilo detallado (adaptado de 'Motos') --}}
-                                            <form action="{{ route('admin.citas.destroy', $cita->id_cita) }}" 
+                                            <form action="{{ route('admin.citas.destroy', $cita->id) }}"
                                                 method="POST"
                                                 onsubmit="return confirm('{{ __('¿Seguro que deseas eliminar esta cita?') }}');"> {{-- Mensaje de confirmación adaptado --}}
                                                 @csrf

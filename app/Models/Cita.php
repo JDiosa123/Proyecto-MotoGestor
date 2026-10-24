@@ -19,6 +19,8 @@ class Cita extends Model
         'fecha',
         'hora',
         'estado',
+        'servicio',
+        'motivo_cancelacion',
     ];
 
     protected $casts = [
@@ -43,7 +45,7 @@ class Cita extends Model
 
     public function scopePendiente(Builder $query): Builder
     {
-        return $query->where('estado', 'pendiente');
+        return $query->where('estado', 'solicitada');
     }
 
     public function scopePorFecha(Builder $query, string $fecha): Builder
@@ -51,4 +53,3 @@ class Cita extends Model
         return $query->where('fecha', $fecha);
     }
 }
-

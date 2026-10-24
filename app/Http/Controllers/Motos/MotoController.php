@@ -14,7 +14,7 @@ class MotoController extends Controller
     public function index(Cliente $cliente = null)
     {
         if ($cliente) {
-            $motos = Moto::where('cliente_id', $cliente->id_cliente)->get();
+            $motos = Moto::where('cliente_id', $cliente->id)->get();
         } else {
             $motos = Moto::with('cliente')->get();
         }

@@ -20,12 +20,14 @@ class CitaFactory extends Factory
             'mecanico_id' => User::factory(),
             'fecha' => fake()->dateTimeBetween('today', '+30 days')->format('Y-m-d'),
             'hora' => fake()->time('H:i:s'),
-            'estado' => fake()->randomElement(['pendiente', 'confirmada', 'cancelada', 'completada']),
+            'estado' => fake()->randomElement(['solicitada', 'aceptada', 'cancelada', 'atendida']),
+            'servicio' => fake()->words(3, true),
+            'motivo_cancelacion' => null,
         ];
     }
 
     public function pendiente(): static
     {
-        return $this->state(['estado' => 'pendiente']);
+        return $this->state(['estado' => 'solicitada']);
     }
 }

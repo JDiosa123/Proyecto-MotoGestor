@@ -58,10 +58,10 @@
                                     <td class="px-6 py-4 text-sm">
                                         {{-- Indicador de Stock Bajo --}}
                                         <span class="px-3 py-1 inline-flex text-xs font-semibold rounded-full
-                                            {{ $producto->cantidad <= 5 
+                                            {{ $producto->cantidad <= $producto->stock_minimo
                                                 ? 'bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-100' 
                                                 : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-700 dark:text-emerald-100' }}">
-                                            {{ $producto->cantidad }}
+                                            {{ $producto->cantidad }} / mínimo {{ $producto->stock_minimo }}
                                         </span>
                                     </td>
 
@@ -76,7 +76,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
                                         <div class="flex justify-end space-x-2">
                                             {{-- Botón Eliminar --}}
-                                            <form action="{{ route('productos.eliminar', $producto->id_producto) }}" 
+                                            <form action="{{ route('productos.eliminar', $producto->id) }}"
                                                     method="POST"
                                                     onsubmit="return confirm('¿Seguro que deseas eliminar este producto?');">
                                                 @csrf

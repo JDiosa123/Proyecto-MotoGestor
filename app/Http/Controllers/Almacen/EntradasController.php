@@ -3,17 +3,21 @@
 namespace App\Http\Controllers\Almacen;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Entrada;
-use App\Models\Producto;
 use App\Models\MovimientoInventario;
+use App\Models\Producto;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class EntradasController extends Controller
 {
     public function index()
     {
-        $entradas = Entrada::with('producto')->latest()->get();
+        $entradas = MovimientoInventario::with('producto')
+            ->where('tipo', 'entrada')
+            ->orderByDesc('fecha')
+            ->get();
+
         return view('almacen.entradas.index', compact('entradas'));
     }
 
@@ -24,64 +28,49 @@ class EntradasController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'categoria' => 'required|in:Insumos,General,Dotacion',
-            'precio' => 'required|numeric|min:0',
-            'cantidad' => 'required|integer|min:1',
-            'descripcion' => 'nullable|string|max:255'
-        ], [
-            'categoria.in' => 'Debe seleccionar una categoría válida.'
+        $data = $request->validate([
+            'nombre' => ['required', 'string', 'max:255'],
+            'categoria' => ['required', 'string', 'max:255'],
+            'precio' => ['required', 'numeric', 'min:0'],
+            'cantidad' => ['required', 'integer', 'min:1'],
+            'descripcion' => ['nullable', 'string', 'max:255'],
         ]);
 
-        
-        $producto = Producto::where('nombre', $request->nombre)->first();
+        DB::transaction(function () use ($data): void {
+            $producto = Producto::where('nombre', $data['nombre'])
+                ->lockForUpdate()
+                ->first();
 
-        
-        if (!$producto) {
-            $producto = Producto::create([
-                'nombre' => $request->nombre,
-                'categoria' => $request->categoria,
-                'precio' => $request->precio,
-                'cantidad' => 0,
-                'descripcion' => $request->descripcion,
-                'fecha_registro' => now(),
-                'user_id' => Auth::id()
-        ]);
-    } else {
-        if ($request->descripcion) {
-            $producto->descripcion = $request->descripcion;
-        }
+            if (!$producto) {
+                $producto = Producto::create([
+                    'nombre' => $data['nombre'],
+                    'categoria' => $data['categoria'],
+                    'precio' => $data['precio'],
+                    'cantidad' => 0,
+                    'descripcion' => $data['descripcion'] ?? null,
+                    'fecha_registro' => now()->toDateString(),
+                    'user_id' => Auth::id(),
+                ]);
+            } else {
+                $producto->categoria = $data['categoria'];
+                $producto->precio = $data['precio'];
+                if (isset($data['descripcion'])) {
+                    $producto->descripcion = $data['descripcion'];
+                }
+            }
 
-        $producto->categoria = $request->categoria;
-        $producto->precio = $request->precio;
+            $producto->cantidad += $data['cantidad'];
+            $producto->save();
 
-    }
-      
-        $producto->cantidad += $request->cantidad;
-        $producto->save();
-
-        
-        $entrada = Entrada::create([
-            'id_producto' => $producto->id_producto,
-            'cantidad' => $request->cantidad,
-            'descripcion' => $request->descripcion,
-            'creado_por' => Auth::user()->name,
-            'fecha' => now()
-        ]);
-
-    
-        
-    MovimientoInventario::create([
-        'id_producto' => $producto->id_producto,
-        'tipo' => 'entrada',
-        'cantidad' => $request->cantidad,
-        'descripcion' => $request->descripcion,
-        'fecha' => now(),
-        'user_id' => auth()->id(), 
-    ]);
-
-
+            MovimientoInventario::create([
+                'id_producto' => $producto->id,
+                'tipo' => 'entrada',
+                'cantidad' => $data['cantidad'],
+                'descripcion' => $data['descripcion'] ?? null,
+                'fecha' => now()->toDateString(),
+                'user_id' => Auth::id(),
+            ]);
+        });
 
         return redirect()->route('entradas.index')->with('success', 'Entrada registrada correctamente.');
     }

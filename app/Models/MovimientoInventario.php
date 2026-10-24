@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class MovimientoInventario extends Model
 {
     protected $table = 'movimientos_inventario';
-    protected $primaryKey = 'id_movimiento';
-    public $timestamps = false;
 
     protected $fillable = [
         'id_producto',
@@ -19,8 +17,13 @@ class MovimientoInventario extends Model
         'user_id',
     ];
 
+    protected $casts = [
+        'cantidad' => 'integer',
+        'fecha' => 'date',
+    ];
+
     public function producto()
     {
-        return $this->belongsTo(Producto::class, 'id_producto', 'id_producto');
+        return $this->belongsTo(Producto::class, 'id_producto');
     }
 }

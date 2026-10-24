@@ -19,7 +19,7 @@
 
                Cuerpo del formulario
                 <div class="p-6">
-                    <form action="{{ route('productos.actualizar', $producto->id_producto) }}" method="POST" class="space-y-6">
+                    <form action="{{ route('productos.actualizar', $producto->id) }}" method="POST" class="space-y-6">
                         @csrf
                         @method('PUT')
 
@@ -53,13 +53,13 @@
                             <x-input-error :messages="$errors->get('precio')" class="mt-2" />
                         </div>
 
-                         CANTIDAD 
+                         STOCK MÍNIMO
                         <div>
-                            <x-input-label for="cantidad" :value="__('Cantidad')" />
-                            <x-text-input id="cantidad" type="number" name="cantidad" 
+                            <x-input-label for="stock_minimo" :value="__('Stock mínimo')" />
+                            <x-text-input id="stock_minimo" type="number" name="stock_minimo"
                                 class="mt-1 block w-full"
-                                :value="old('cantidad', $producto->cantidad)" min="0" required />
-                            <x-input-error :messages="$errors->get('cantidad')" class="mt-2" />
+                                :value="old('stock_minimo', $producto->stock_minimo)" min="0" required />
+                            <x-input-error :messages="$errors->get('stock_minimo')" class="mt-2" />
                         </div>
 
                          DESCRIPCIÓN 

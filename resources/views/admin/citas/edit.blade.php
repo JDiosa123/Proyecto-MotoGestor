@@ -19,7 +19,7 @@
 
                 {{-- Cuerpo --}}
                 <div class="p-6">
-                    <form action="{{ route('admin.citas.update', $cita->id_cita) }}" method="POST" class="space-y-6">
+                    <form action="{{ route('admin.citas.update', $cita->id) }}" method="POST" class="space-y-6">
                         @csrf
                         @method('PUT')
 
@@ -32,7 +32,7 @@
                                 rounded-md shadow-sm"
                                 required>
                                 @foreach($clientes as $cliente)
-                                    <option value="{{ $cliente->id_cliente }}" {{ old('cliente_id') == $cliente->id_cliente ? 'selected' : '' }}>
+                                    <option value="{{ $cliente->id }}" {{ old('cliente_id', $cita->cliente_id) == $cliente->id ? 'selected' : '' }}>
                                         C.C {{ $cliente->documento }} - {{ $cliente->nombre }}  {{ $cliente->apellido }}
                                     </option>
                                 @endforeach
@@ -49,8 +49,8 @@
                                 rounded-md shadow-sm"
                                 required>
                                 @foreach ($motos as $moto)
-                                    <option value="{{ $moto->id_moto }}"
-                                        {{ $moto->id_moto == $cita->moto_id ? 'selected' : '' }}>
+                                    <option value="{{ $moto->id }}"
+                                        {{ $moto->id == $cita->moto_id ? 'selected' : '' }}>
                                         {{ $moto->placa }} - {{ $moto->marca }}
                                     </option>
                                 @endforeach
@@ -65,7 +65,8 @@
                                 class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300
                                 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600
                                 rounded-md shadow-sm"
-                                required>
+                                >
+                                <option value="">Sin asignar</option>
                                 @foreach ($mecanicos as $mecanico)
                                     <option value="{{ $mecanico->id }}"
                                         {{ $mecanico->id == $cita->mecanico_id ? 'selected' : '' }}>
@@ -74,6 +75,14 @@
                                 @endforeach
                             </select>
                             <x-input-error :messages="$errors->get('mecanico_id')" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="servicio" :value="__('Servicio solicitado')" />
+                            <x-text-input id="servicio" type="text" name="servicio"
+                                class="block mt-1 w-full dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700"
+                                :value="old('servicio', $cita->servicio)" maxlength="255" required />
+                            <x-input-error :messages="$errors->get('servicio')" class="mt-2" />
                         </div>
 
                         {{-- FECHA --}}
@@ -101,12 +110,20 @@
                                 class="block mt-1 w-full 
                                 rounded-md shadow-sm"
                                 required>
-                                <option value="Agendada"   {{ $cita->estado == 'Agendada' ? 'selected' : '' }}>Agendada</option>
-                                <option value="En Proceso" {{ $cita->estado == 'En Proceso' ? 'selected' : '' }}>En proceso</option>
-                                <option value="Finalizada" {{ $cita->estado == 'Finalizada' ? 'selected' : '' }}>Finalizada</option>
-                                <option value="Cancelada"  {{ $cita->estado == 'Cancelada' ? 'selected' : '' }}>Cancelada</option>
+                                @foreach (['solicitada' => 'Solicitada', 'aceptada' => 'Aceptada', 'cancelada' => 'Cancelada', 'atendida' => 'Atendida'] as $estado => $etiqueta)
+                                    <option value="{{ $estado }}" {{ old('estado', $cita->estado) === $estado ? 'selected' : '' }}>
+                                        {{ $etiqueta }}
+                                    </option>
+                                @endforeach
                             </select>
                             <x-input-error :messages="$errors->get('estado')" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="motivo_cancelacion" :value="__('Motivo de cancelación')" />
+                            <textarea id="motivo_cancelacion" name="motivo_cancelacion" rows="3"
+                                class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">{{ old('motivo_cancelacion', $cita->motivo_cancelacion) }}</textarea>
+                            <x-input-error :messages="$errors->get('motivo_cancelacion')" class="mt-2" />
                         </div>
 
                         {{-- BOTONES --}}

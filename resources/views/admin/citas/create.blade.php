@@ -28,7 +28,7 @@
                             <select id="cliente_id" name="cliente_id" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
                                 <option value="">{{ __('Seleccione un cliente') }}</option>
                                 @foreach($clientes as $cliente)
-                                    <option value="{{ $cliente->id_cliente }}" {{ old('cliente_id') == $cliente->id_cliente ? 'selected' : '' }}>
+                                    <option value="{{ $cliente->id }}" {{ old('cliente_id') == $cliente->id ? 'selected' : '' }}>
                                         C.C {{ $cliente->documento }} - {{ $cliente->nombre }}  {{ $cliente->apellido }}
                                     </option>
                                 @endforeach
@@ -50,8 +50,8 @@
                         {{-- Mecánico --}}
                         <div>
                             <x-input-label for="mecanico_id" :value="__('Mecánico Encargado')" />
-                            <select name="mecanico_id" id="mecanico_id" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
-                                <option value="">{{ __('Seleccione un mecánico') }}</option>
+                            <select name="mecanico_id" id="mecanico_id" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
+                                <option value="">{{ __('Sin asignar') }}</option>
                                 @foreach ($mecanicos as $mecanico)
                                     <option value="{{ $mecanico->id }}" {{ old('mecanico_id') == $mecanico->id ? 'selected' : '' }}>
                                         {{ $mecanico->name }}
@@ -59,6 +59,13 @@
                                 @endforeach
                             </select>
                             <x-input-error :messages="$errors->get('mecanico_id')" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="servicio" :value="__('Servicio solicitado')" />
+                            <x-text-input id="servicio" class="block mt-1 w-full" type="text" name="servicio"
+                                :value="old('servicio')" maxlength="255" required />
+                            <x-input-error :messages="$errors->get('servicio')" class="mt-2" />
                         </div>
 
                         {{-- Fecha --}}
@@ -130,9 +137,9 @@
                     motoSelect.innerHTML = '<option value="">Seleccione una moto</option>';
 
                     data.forEach(moto => {
-                        const isSelected = oldMotoId == moto.id_moto ? 'selected' : '';
+                        const isSelected = oldMotoId == moto.id ? 'selected' : '';
                         motoSelect.innerHTML += `
-                            <option value="${moto.id_moto}" ${isSelected}>
+                            <option value="${moto.id}" ${isSelected}>
                                 ${moto.placa} - ${moto.marca} ${moto.modelo}
                             </option>
                         `;
