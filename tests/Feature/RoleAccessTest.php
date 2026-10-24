@@ -229,6 +229,16 @@ class RoleAccessTest extends TestCase
         $this->get(route('mecanico.citas.index'))->assertOk();
         $this->get(route('productos.create'))->assertOk();
         $this->get(route('entradas.create'))->assertOk();
+        $this->get(route('admin.users.create'))
+            ->assertOk()
+            ->assertSee('Al menos 8 caracteres')
+        ->assertSee('data-password-toggle="password"', false);
+
+        $user = User::factory()->create();
+        $this->get(route('admin.users.edit', $user))
+            ->assertOk()
+            ->assertSee('Al menos 8 caracteres')
+        ->assertSee('data-password-toggle="password_confirmation"', false);
     }
 
     private function createClientAccount(string $email = 'cliente@motogestor.com'): array
