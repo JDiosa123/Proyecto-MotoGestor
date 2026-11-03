@@ -8,6 +8,7 @@ use App\Models\Moto;
 use App\Models\Producto;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class RoleAccessTest extends TestCase
@@ -190,13 +191,14 @@ class RoleAccessTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $cliente = Cliente::factory()->create(['user_id' => null]);
+        $password = Str::password(16).'Aa1!';
 
         $this->actingAs($admin)
             ->post(route('admin.users.store'), [
                 'name' => 'Cuenta Cliente',
                 'email' => 'cuenta.cliente@motogestor.com',
-                'password' => 'Motogestor2026!',
-                'password_confirmation' => 'Motogestor2026!',
+                'password' => $password,
+                'password_confirmation' => $password,
                 'role' => User::ROLE_CLIENT,
                 'status' => 'activo',
                 'cliente_id' => $cliente->id,
