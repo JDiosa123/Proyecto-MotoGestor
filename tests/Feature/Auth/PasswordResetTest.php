@@ -5,7 +5,9 @@ namespace Tests\Feature\Auth;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class PasswordResetTest extends TestCase
@@ -25,8 +27,9 @@ class PasswordResetTest extends TestCase
 
         $user = User::factory()->admin()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $response = $this->post('/forgot-password', ['email' => $user->email]);
 
+        $response->assertRedirect()->assertSessionHas('status');
         Notification::assertSentTo($user, ResetPassword::class);
     }
 
@@ -36,10 +39,11 @@ class PasswordResetTest extends TestCase
 
         $user = User::factory()->admin()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $response = $this->post('/forgot-password', ['email' => $user->email]);
 
+        $response->assertRedirect()->assertSessionHas('status');
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) {
-            $response = $this->get('/reset-password/'.$notification->token);
+            $response = $this->get(route('password.reset', $notification->token));
 
             $response->assertStatus(200);
 
@@ -53,19 +57,31 @@ class PasswordResetTest extends TestCase
 
         $user = User::factory()->admin()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $requestResponse = $this->post('/forgot-password', ['email' => $user->email]);
+        $requestResponse->assertRedirect()->assertSessionHas('status');
 
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
-            $response = $this->post('/reset-password', [
+            $weakPasswordResponse = $this->post(route('password.store'), [
                 'token' => $notification->token,
                 'email' => $user->email,
                 'password' => 'password',
                 'password_confirmation' => 'password',
             ]);
 
+            $weakPasswordResponse->assertSessionHasErrors('password');
+
+            $newPassword = Str::password(16).'Aa1!';
+            $response = $this->post('/reset-password', [
+                'token' => $notification->token,
+                'email' => $user->email,
+                'password' => $newPassword,
+                'password_confirmation' => $newPassword,
+            ]);
+
             $response
                 ->assertSessionHasNoErrors()
                 ->assertRedirect(route('login'));
+            $this->assertTrue(Hash::check($newPassword, $user->refresh()->password));
 
             return true;
         });

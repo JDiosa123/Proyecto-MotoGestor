@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use App\Models\User;
 
 class StoreUserRequest extends FormRequest
@@ -23,7 +24,7 @@ class StoreUserRequest extends FormRequest
                 Rule::unique('users', 'email'),
                 'regex:/^[A-Za-z0-9._%+-]+@motogestor\.com$/',
             ],
-            'password' => ['required', 'confirmed', 'min:8', 'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).+$/'],
+            'password' => ['required', 'confirmed', Password::defaults()],
             'role' => ['required', Rule::in(User::ROLES)],
             'status' => ['required', Rule::in(['activo', 'inactivo'])],
             'cliente_id' => [
@@ -40,8 +41,6 @@ class StoreUserRequest extends FormRequest
             'name.regex' => 'El nombre solo debe contener letras y espacios.',
             'email.regex' => 'El email debe ser del dominio @motogestor.com.',
             'email.unique' => 'Este email ya está registrado.',
-            'password.regex' => 'La contraseña debe tener mayúscula, minúscula, número y carácter especial.',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
         ];
     }

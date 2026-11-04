@@ -7,6 +7,7 @@ use App\Http\Controllers\Clientes\CitaController;
 use App\Http\Controllers\Clientes\ClienteController;
 use App\Http\Controllers\Inventario\InventarioController;
 use App\Http\Controllers\Motos\MotoController;
+use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,11 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', $allRoles])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
 
 Route::middleware(['auth', $adminOnly])->prefix('admin/users')->name('admin.users.')->group(function () {
     Route::get('/', [UserController::class, 'index'])->name('index');
