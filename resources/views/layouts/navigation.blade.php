@@ -32,6 +32,7 @@
                     @if ($role === \App\Models\User::ROLE_ADMIN)
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')" class="text-white hover:text-[#3b82f6]">Usuarios</x-nav-link>
                     @endif
+                    <x-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.*')" class="text-white hover:text-[#3b82f6]">Perfil</x-nav-link>
                 </div>
             </div>
 
@@ -90,6 +91,7 @@
             @if ($role === \App\Models\User::ROLE_ADMIN)
                 <x-responsive-nav-link :href="route('admin.users.index')" class="text-white hover:bg-gray-600 hover:text-[#3b82f6]">Usuarios</x-responsive-nav-link>
             @endif
+            <x-responsive-nav-link :href="route('profile.edit')" class="text-white hover:bg-gray-600 hover:text-[#3b82f6]">Perfil</x-responsive-nav-link>
         </div>
 
         <div class="pt-4 pb-1 border-t border-gray-600">
