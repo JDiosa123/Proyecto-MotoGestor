@@ -39,6 +39,8 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Categoría</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Precio</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Cantidad</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stock mínimo</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Estado</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Descripción</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fecha Registro</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider text-right">Acciones</th>
@@ -62,14 +64,24 @@
                                         ${{ number_format($producto->precio, 0, ',', '.') }}
                                     </td>
 
+                                    <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                                        {{ $producto->cantidad }}
+                                    </td>
+
+                                    <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                                        {{ $producto->stock_minimo }}
+                                    </td>
+
                                     <td class="px-6 py-4 text-sm">
-                                        {{-- Indicador de Stock Bajo --}}
-                                        <span class="px-3 py-1 inline-flex text-xs font-semibold rounded-full
-                                            {{ $producto->cantidad <= $producto->stock_minimo
-                                                ? 'bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-100' 
-                                                : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-700 dark:text-emerald-100' }}">
-                                            {{ $producto->cantidad }} / mínimo {{ $producto->stock_minimo }}
-                                        </span>
+                                        @if ($producto->esCritico())
+                                            <span class="px-3 py-1 inline-flex text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-100">
+                                                Crítico
+                                            </span>
+                                        @else
+                                            <span class="px-3 py-1 inline-flex text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-700 dark:text-emerald-100">
+                                                OK
+                                            </span>
+                                        @endif
                                     </td>
 
                                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
@@ -105,7 +117,7 @@
                             {{-- Asumiendo que necesitas un mensaje si no hay productos --}}
                             @empty($productos)
                                 <tr>
-                                    <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                                    <td colspan="9" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                                         No hay productos registrados en el stock.
                                     </td>
                                 </tr>

@@ -44,4 +44,14 @@ class Producto extends Model
     {
         return $query->where('cantidad', '>', 0);
     }
+
+    public function esCritico(): bool
+    {
+        return $this->cantidad <= $this->stock_minimo;
+    }
+
+    public function scopeCritico(Builder $query): Builder
+    {
+        return $query->whereColumn('cantidad', '<=', 'stock_minimo');
+    }
 }

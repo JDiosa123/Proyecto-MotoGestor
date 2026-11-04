@@ -24,7 +24,9 @@ class UpdateProductoRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'stock_minimo.required' => 'El stock mínimo es obligatorio.',
             'stock_minimo.integer' => 'El stock mínimo debe ser un número entero.',
+            'stock_minimo.min' => 'El stock mínimo no puede ser negativo.',
         ];
     }
 }

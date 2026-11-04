@@ -38,6 +38,16 @@
                         </div>
 
                         <div>
+                            <x-input-label for="stock_minimo" :value="__('Stock mínimo')" />
+                            <x-text-input id="stock_minimo" type="number" min="0" step="1" name="stock_minimo" class="mt-1 block w-full"
+                                :value="old('stock_minimo', 0)" required />
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                                Al llegar a esta cantidad el producto se marca como crítico
+                            </p>
+                            <x-input-error :messages="$errors->get('stock_minimo')" class="mt-2" />
+                        </div>
+
+                        <div>
                             <x-input-label for="descripcion" :value="__('Descripción')" />
                             <textarea id="descripcion" name="descripcion" rows="3"
                                 class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm">{{ old('descripcion') }}</textarea>

@@ -25,7 +25,6 @@ class ProductoController extends Controller
     {
         Producto::create($request->validated() + [
             'cantidad' => 0,
-            'stock_minimo' => 0,
             'fecha_registro' => now()->toDateString(),
             'user_id' => Auth::id(),
         ]);
