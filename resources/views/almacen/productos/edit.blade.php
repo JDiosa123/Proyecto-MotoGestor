@@ -40,7 +40,7 @@
 
                         <div>
                             <x-input-label for="stock_minimo" :value="__('Stock mínimo')" />
-                            <x-text-input id="stock_minimo" type="number" min="0" name="stock_minimo" class="mt-1 block w-full"
+                            <x-text-input id="stock_minimo" type="number" min="0" step="1" name="stock_minimo" class="mt-1 block w-full"
                                 :value="old('stock_minimo', $producto->stock_minimo)" required />
                             <x-input-error :messages="$errors->get('stock_minimo')" class="mt-2" />
                         </div>
