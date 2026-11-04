@@ -55,7 +55,7 @@ class RoleAccessTest extends TestCase
         ];
 
         foreach ($rolesAndDeniedRoutes as $role => $routes) {
-            $user = User::factory()->create(['role' => $role]);
+            $user = User::factory()->state(['role' => $role])->create();
 
             foreach ($routes as $routeName) {
                 $this->actingAs($user)
@@ -67,7 +67,7 @@ class RoleAccessTest extends TestCase
 
     public function test_assistant_and_storekeeper_get_only_their_allowed_read_and_write_routes(): void
     {
-        $assistant = User::factory()->create(['role' => User::ROLE_ASSISTANT]);
+        $assistant = User::factory()->asistente()->create();
         $this->actingAs($assistant)->get(route('dashboard'))->assertOk();
         $this->actingAs($assistant)
             ->get(route('admin.clientes.index'))->assertOk();
@@ -77,7 +77,7 @@ class RoleAccessTest extends TestCase
         $this->get(route('entradas.index'))->assertOk();
         $this->get(route('salidas.index'))->assertOk();
 
-        $storekeeper = User::factory()->create(['role' => User::ROLE_STOREKEEPER]);
+        $storekeeper = User::factory()->almacenista()->create();
         $this->actingAs($storekeeper)->get(route('dashboard'))->assertOk();
         $this->actingAs($storekeeper)
             ->get(route('productos.create'))->assertOk();
@@ -88,8 +88,8 @@ class RoleAccessTest extends TestCase
 
     public function test_mechanic_only_sees_and_attends_assigned_appointments(): void
     {
-        $mechanic = User::factory()->create(['role' => User::ROLE_MECHANIC]);
-        $otherMechanic = User::factory()->create(['role' => User::ROLE_MECHANIC]);
+        $mechanic = User::factory()->mecanico()->create();
+        $otherMechanic = User::factory()->mecanico()->create();
         $ownCita = $this->createCita('Servicio asignado', $mechanic);
         $otherCita = $this->createCita('Servicio ajeno', $otherMechanic);
 
@@ -175,8 +175,7 @@ class RoleAccessTest extends TestCase
 
     public function test_inactive_user_is_logged_out_before_accessing_role_routes(): void
     {
-        $user = User::factory()->create([
-            'role' => User::ROLE_ASSISTANT,
+        $user = User::factory()->asistente()->create([
             'status' => 'inactivo',
         ]);
 
@@ -189,7 +188,7 @@ class RoleAccessTest extends TestCase
 
     public function test_admin_can_create_a_client_user_and_link_exactly_one_client_record(): void
     {
-        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $admin = User::factory()->admin()->create();
         $cliente = Cliente::factory()->create(['user_id' => null]);
         $password = Str::password(16).'Aa1!';
 
@@ -212,8 +211,8 @@ class RoleAccessTest extends TestCase
 
     public function test_admin_can_toggle_user_status(): void
     {
-        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $user = User::factory()->create(['status' => 'activo']);
+        $admin = User::factory()->admin()->create();
+        $user = User::factory()->admin()->create(['status' => 'activo']);
 
         $this->actingAs($admin)
             ->patch(route('admin.users.toggleStatus', $user))
@@ -224,7 +223,7 @@ class RoleAccessTest extends TestCase
 
     public function test_admin_can_access_routes_available_to_other_roles(): void
     {
-        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $admin = User::factory()->admin()->create();
 
         $this->actingAs($admin)
             ->get(route('mis-citas.index'))->assertOk();
@@ -236,7 +235,7 @@ class RoleAccessTest extends TestCase
             ->assertSee('Al menos 8 caracteres')
         ->assertSee('data-password-toggle="password"', false);
 
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $this->get(route('admin.users.edit', $user))
             ->assertOk()
             ->assertSee('Al menos 8 caracteres')
@@ -245,8 +244,7 @@ class RoleAccessTest extends TestCase
 
     private function createClientAccount(string $email = 'cliente@motogestor.com'): array
     {
-        $user = User::factory()->create([
-            'role' => User::ROLE_CLIENT,
+        $user = User::factory()->cliente()->create([
             'email' => $email,
         ]);
         $cliente = Cliente::factory()->create(['user_id' => $user->id]);

@@ -16,7 +16,7 @@ class InventoryAndCitasSchemaTest extends TestCase
 
     public function test_salida_uses_a_transactional_movement_and_reduces_stock(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $producto = Producto::factory()->create(['cantidad' => 4]);
 
         $this->actingAs($user)
@@ -39,7 +39,7 @@ class InventoryAndCitasSchemaTest extends TestCase
 
     public function test_salida_rejects_negative_stock_without_recording_a_movement(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $producto = Producto::factory()->create(['cantidad' => 2]);
 
         $this->actingAs($user)
@@ -56,7 +56,7 @@ class InventoryAndCitasSchemaTest extends TestCase
 
     public function test_cita_creation_uses_standard_ids_and_new_statuses(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $cliente = Cliente::factory()->create();
         $moto = Moto::factory()->create(['cliente_id' => $cliente->id]);
 
@@ -82,7 +82,7 @@ class InventoryAndCitasSchemaTest extends TestCase
 
     public function test_updated_inventory_and_cita_views_render(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $cliente = Cliente::factory()->create();
         $moto = Moto::factory()->create(['cliente_id' => $cliente->id]);
         $cita = Cita::factory()->create([
