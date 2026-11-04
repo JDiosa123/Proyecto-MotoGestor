@@ -17,7 +17,7 @@ class CitaFactory extends Factory
         return [
             'cliente_id' => Cliente::factory(),
             'moto_id' => Moto::factory(),
-            'mecanico_id' => User::factory(),
+            'mecanico_id' => User::factory()->mecanico(),
             'fecha' => fake()->dateTimeBetween('today', '+30 days')->format('Y-m-d'),
             'hora' => fake()->time('H:i:s'),
             'estado' => fake()->randomElement(['solicitada', 'aceptada', 'cancelada', 'atendida']),

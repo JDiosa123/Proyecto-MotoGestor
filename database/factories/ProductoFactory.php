@@ -19,7 +19,7 @@ class ProductoFactory extends Factory
             'precio' => fake()->randomFloat(2, 5, 1200),
             'descripcion' => fake()->sentence(10),
             'fecha_registro' => fake()->dateTimeBetween('-1 year', 'now')->format('Y-m-d'),
-            'user_id' => User::factory(),
+            'user_id' => User::factory()->admin(),
         ];
     }
 
