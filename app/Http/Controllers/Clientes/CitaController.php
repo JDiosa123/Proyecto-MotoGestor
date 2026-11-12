@@ -34,6 +34,7 @@ class CitaController extends Controller
         return view('admin.citas.create', [
             'clientes' => collect([$cliente]),
             'mecanicos' => collect(),
+            'motos' => $cliente->motos,
             'esCliente' => true,
         ]);
     }
