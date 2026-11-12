@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Clientes;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CancelCitaRequest;
+use App\Http\Requests\RejectCitaRequest;
 use App\Http\Requests\StoreCitaRequest;
 use App\Http\Requests\UpdateCitaRequest;
 use App\Models\Cita;
@@ -109,6 +110,20 @@ class CitaController extends Controller
             : $data);
 
         return redirect()->route('admin.citas.index')->with('success', 'Cita actualizada.');
+    }
+
+    public function reject(RejectCitaRequest $request, Cita $cita)
+    {
+        $updated = Cita::whereKey($cita->getKey())
+            ->where('estado', 'solicitada')
+            ->update([
+                'estado' => 'cancelada',
+                'motivo_cancelacion' => $request->validated('motivo_cancelacion'),
+            ]);
+
+        abort_unless($updated === 1, 422, 'Solo se pueden rechazar citas solicitadas.');
+
+        return back()->with('success', 'Cita rechazada correctamente.');
     }
 
     public function attend(Request $request, Cita $cita)
