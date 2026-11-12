@@ -46,11 +46,30 @@
                         {{-- Moto --}}
                         <div>
                             <x-input-label for="moto_id" :value="__('Moto')" />
-                            {{-- Select dinámico para las motos del cliente --}}
-                            <select name="moto_id" id="moto_id" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
-                                <option value="">{{ __('Seleccione primero un cliente') }}</option>
-                                {{-- Las opciones de motos se llenarán con JavaScript --}}
+                            <select name="moto_id" id="moto_id" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required {{ ($esCliente ?? false) && $motos->isEmpty() ? 'disabled' : '' }}>
+                                @if ($esCliente ?? false)
+                                    @if ($motos->isEmpty())
+                                        <option value="">No tienes motos registradas. Pide al taller que registre tu moto</option>
+                                    @else
+                                        @if ($motos->count() > 1)
+                                            <option value="">{{ __('Seleccione una moto') }}</option>
+                                        @endif
+                                        @foreach ($motos as $moto)
+                                            <option value="{{ $moto->id }}" {{ $motos->count() === 1 || old('moto_id') == $moto->id ? 'selected' : '' }}>
+                                                {{ $moto->placa }} - {{ $moto->marca }} {{ $moto->modelo }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                @else
+                                    <option value="">{{ __('Seleccione primero un cliente') }}</option>
+                                    {{-- Las opciones se llenan dinámicamente al elegir un cliente. --}}
+                                @endif
                             </select>
+                            @if (($esCliente ?? false) && $motos->isEmpty())
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">
+                                    No tienes motos registradas. Pide al taller que registre tu moto
+                                </p>
+                            @endif
                             <x-input-error :messages="$errors->get('moto_id')" class="mt-2" />
                         </div>
 
@@ -100,7 +119,7 @@
                         {{-- Botones de acción --}}
                         <div class="flex justify-start space-x-4 pt-4">
                             {{-- Usando el componente x-primary-button y el estilo azul que habías usado --}}
-                            <x-primary-button class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            <x-primary-button class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150" :disabled="($esCliente ?? false) && $motos->isEmpty()">
                                 {{ __('Agendar Cita') }}
                             </x-primary-button>
 
@@ -115,6 +134,7 @@
         </div>
     </div>
     
+    @unless ($esCliente ?? false)
     <script>
         const clienteField = document.getElementById('cliente_id');
         const loadMotos = function () {
@@ -157,13 +177,14 @@
                     console.error('Error al cargar motos:', error);
                     motoSelect.innerHTML = '<option value="">Error al cargar las motos</option>';
                 });
-        });
+        };
 
         if (clienteField?.tagName === 'SELECT') {
             clienteField.addEventListener('change', loadMotos);
-        }
-        if (clienteField?.value) {
-            loadMotos();
+            if (clienteField.value) {
+                loadMotos();
+            }
         }
     </script>
+    @endunless
 </x-app-layout>
