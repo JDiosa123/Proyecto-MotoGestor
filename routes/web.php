@@ -68,6 +68,7 @@ Route::middleware(['auth', $managementRoles])->group(function () {
         Route::get('/', [CitaController::class, 'index'])->name('index');
         Route::get('/create', [CitaController::class, 'create'])->name('create');
         Route::post('/', [CitaController::class, 'store'])->name('store');
+        Route::patch('/{cita}/rechazar', [CitaController::class, 'reject'])->name('reject');
         Route::get('/{cita}/edit', [CitaController::class, 'edit'])->name('edit');
         Route::put('/{cita}', [CitaController::class, 'update'])->name('update');
     });

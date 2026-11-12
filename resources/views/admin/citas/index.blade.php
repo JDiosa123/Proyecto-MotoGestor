@@ -127,11 +127,9 @@
                                     </td>
 
                                     {{-- Motivo de cancelación --}}
-                                    <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                                    <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 break-words">
                                         @if ($cita->estado === 'cancelada' && filled($cita->motivo_cancelacion))
-                                            <span title="{{ $cita->motivo_cancelacion }}">
-                                                {{ \Illuminate\Support\Str::limit($cita->motivo_cancelacion, 40) }}
-                                            </span>
+                                            {{ $cita->motivo_cancelacion }}
                                         @else
                                             -
                                         @endif
@@ -145,6 +143,23 @@
                                                     class="inline-flex items-center px-3 py-1.5 bg-yellow-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                                     {{ __('Editar') }}
                                                 </a>
+                                            @endif
+
+                                            @if (in_array($rol, [\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_ASSISTANT], true) && $cita->estado === 'solicitada')
+                                                <form action="{{ route('admin.citas.reject', $cita) }}" method="POST"
+                                                    class="flex flex-col items-end gap-2"
+                                                    onsubmit="return confirm('¿Confirma que desea rechazar esta cita?');">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <textarea name="motivo_cancelacion" required minlength="5" maxlength="255" rows="2"
+                                                        placeholder="Motivo del rechazo (5 a 255 caracteres)"
+                                                        aria-label="Motivo del rechazo"
+                                                        class="w-56 rounded-md border-gray-300 text-sm dark:bg-gray-900 dark:text-gray-100">{{ old('motivo_cancelacion') }}</textarea>
+                                                    <x-input-error :messages="$errors->get('motivo_cancelacion')" class="mt-1" />
+                                                    <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                                        Rechazar
+                                                    </button>
+                                                </form>
                                             @endif
 
                                             @if ($rol === \App\Models\User::ROLE_ADMIN)
