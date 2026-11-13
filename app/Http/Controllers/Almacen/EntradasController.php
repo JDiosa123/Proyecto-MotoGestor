@@ -34,6 +34,9 @@ class EntradasController extends Controller
             'precio' => ['required', 'numeric', 'min:0'],
             'cantidad' => ['required', 'integer', 'min:1'],
             'descripcion' => ['nullable', 'string', 'max:255'],
+            'fecha' => ['nullable', 'date', 'before_or_equal:today'],
+        ], [
+            'fecha.before_or_equal' => 'La fecha no puede ser posterior a hoy.',
         ]);
 
         DB::transaction(function () use ($data): void {
@@ -67,7 +70,7 @@ class EntradasController extends Controller
                 'tipo' => 'entrada',
                 'cantidad' => $data['cantidad'],
                 'descripcion' => $data['descripcion'] ?? null,
-                'fecha' => now()->toDateString(),
+                'fecha' => $data['fecha'] ?? now()->toDateString(),
                 'user_id' => Auth::id(),
             ]);
         });

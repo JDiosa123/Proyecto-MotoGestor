@@ -7,11 +7,24 @@ use App\Models\Cliente;
 use App\Models\Moto;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class RejectCitaTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Carbon::setTestNow(Carbon::parse('2026-11-12 10:15:00', 'America/Bogota'));
+    }
+
+    protected function tearDown(): void
+    {
+        Carbon::setTestNow();
+        parent::tearDown();
+    }
 
     public function test_assistant_rejects_a_requested_appointment_and_saves_the_reason(): void
     {
@@ -111,7 +124,7 @@ class RejectCitaTest extends TestCase
         $mechanic = User::factory()->mecanico()->create();
         $cita = $this->createCita([
             'mecanico_id' => $mechanic->id,
-            'fecha' => '2026-11-20',
+            'fecha' => $this->nextFriday(),
             'hora' => '10:00:00',
         ]);
 
@@ -128,7 +141,7 @@ class RejectCitaTest extends TestCase
                 'cliente_id' => $otherCliente->id,
                 'moto_id' => $otherMoto->id,
                 'mecanico_id' => $mechanic->id,
-                'fecha' => '2026-11-20',
+                'fecha' => $this->nextFriday(),
                 'hora' => '10:00',
                 'servicio' => 'Cambio de aceite',
             ])
@@ -137,7 +150,7 @@ class RejectCitaTest extends TestCase
         $this->assertDatabaseHas('citas', [
             'cliente_id' => $otherCliente->id,
             'mecanico_id' => $mechanic->id,
-            'fecha' => '2026-11-20 00:00:00',
+            'fecha' => $this->nextFriday().' 00:00:00',
             'hora' => '10:00',
             'estado' => 'solicitada',
         ]);
@@ -149,7 +162,7 @@ class RejectCitaTest extends TestCase
         $mechanic = User::factory()->mecanico()->create();
         $cita = $this->createCita([
             'mecanico_id' => $mechanic->id,
-            'fecha' => '2026-11-20',
+            'fecha' => $this->nextFriday(),
             'hora' => '10:00:00',
         ]);
 
@@ -158,7 +171,7 @@ class RejectCitaTest extends TestCase
         ])->assertRedirect();
 
         $target = $this->createCita([
-            'fecha' => '2026-11-21',
+            'fecha' => Carbon::parse($this->nextFriday())->addDay()->toDateString(),
             'hora' => '11:00:00',
         ]);
         $admin = User::factory()->admin()->create();
@@ -168,7 +181,7 @@ class RejectCitaTest extends TestCase
                 'cliente_id' => $target->cliente_id,
                 'moto_id' => $target->moto_id,
                 'mecanico_id' => $mechanic->id,
-                'fecha' => '2026-11-20',
+                'fecha' => $this->nextFriday(),
                 'hora' => '10:00',
                 'estado' => 'solicitada',
                 'servicio' => $target->servicio,
@@ -176,7 +189,7 @@ class RejectCitaTest extends TestCase
             ])
             ->assertRedirect(route('admin.citas.index'));
 
-        $this->assertSame('2026-11-20', $target->fresh()->fecha->format('Y-m-d'));
+        $this->assertSame($this->nextFriday(), $target->fresh()->fecha->format('Y-m-d'));
         $this->assertSame($mechanic->id, $target->fresh()->mecanico_id);
     }
 
@@ -237,6 +250,11 @@ class RejectCitaTest extends TestCase
         return [$user, $cliente];
     }
 
+    private function nextFriday(): string
+    {
+        return now(config('app.timezone'))->next('Friday')->toDateString();
+    }
+
     private function createCita(array $attributes = []): Cita
     {
         $cliente = isset($attributes['cliente_id'])
@@ -248,7 +266,7 @@ class RejectCitaTest extends TestCase
             'cliente_id' => $cliente->id,
             'moto_id' => $moto->id,
             'mecanico_id' => null,
-            'fecha' => '2026-11-20',
+            'fecha' => $this->nextFriday(),
             'hora' => '10:00:00',
             'estado' => 'solicitada',
             'motivo_cancelacion' => null,

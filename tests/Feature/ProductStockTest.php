@@ -69,6 +69,7 @@ class ProductStockTest extends TestCase
                 'precio' => $producto->precio,
                 'stock_minimo' => 5,
                 'descripcion' => $producto->descripcion,
+                'fecha_registro' => $producto->fecha_registro,
             ])
             ->assertRedirect(route('productos.index'));
 
@@ -153,6 +154,7 @@ class ProductStockTest extends TestCase
             'precio' => 25.50,
             'stock_minimo' => 0,
             'descripcion' => 'Juego delantero',
+            'fecha_registro' => now(config('app.timezone'))->toDateString(),
         ], $overrides);
     }
 }

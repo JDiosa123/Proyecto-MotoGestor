@@ -5,6 +5,13 @@
         </h1>
     </x-slot>
 
+    @php
+        $horarioSemana = config('taller.horarios.1');
+        $ultimaHoraSemana = \Carbon\Carbon::createFromFormat('H:i', $horarioSemana['cierre'])
+            ->subMinutes(config('taller.margen_cierre_minutos'))
+            ->format('H:i');
+    @endphp
+
     <div class="py-6">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             
@@ -102,7 +109,7 @@
                             {{-- Input de fecha con los estilos de dark mode aplicados --}}
                             <x-text-input id="fecha" 
                                 class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" 
-                                type="date" name="fecha" :value="old('fecha')" required />
+                                type="date" name="fecha" :value="old('fecha')" min="{{ now(config('app.timezone'))->toDateString() }}" required />
                             <x-input-error :messages="$errors->get('fecha')" class="mt-2" />
                         </div>
 
@@ -112,7 +119,7 @@
                             {{-- Input de hora con los estilos de dark mode aplicados --}}
                             <x-text-input id="hora" 
                                 class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" 
-                                type="time" name="hora" :value="old('hora')" required />
+                                type="time" name="hora" :value="old('hora')" min="{{ $horarioSemana['apertura'] }}" max="{{ $ultimaHoraSemana }}" step="{{ config('taller.paso_minutos') * 60 }}" data-horarios='@json(config("taller.horarios"))' required />
                             <x-input-error :messages="$errors->get('hora')" class="mt-2" />
                         </div>
 
@@ -187,4 +194,36 @@
         }
     </script>
     @endunless
+    <script>
+        const fechaCita = document.getElementById('fecha');
+        const horaCita = document.getElementById('hora');
+        const horariosCita = JSON.parse(horaCita.dataset.horarios);
+        const pasoCita = {{ config('taller.paso_minutos') * 60 }};
+        const margenCierreCita = {{ config('taller.margen_cierre_minutos') }};
+
+        const actualizarLimitesHora = () => {
+            if (!fechaCita.value) {
+                return;
+            }
+
+            const [year, month, day] = fechaCita.value.split('-').map(Number);
+            const dayOfWeek = new Date(year, month - 1, day).getDay() || 7;
+            const horario = horariosCita[dayOfWeek];
+
+            if (!horario) {
+                horaCita.removeAttribute('min');
+                horaCita.removeAttribute('max');
+                return;
+            }
+
+            const [closeHour, closeMinute] = horario.cierre.split(':').map(Number);
+            const cierreEnMinutos = closeHour * 60 + closeMinute - margenCierreCita;
+            horaCita.min = horario.apertura;
+            horaCita.max = `${String(Math.floor(cierreEnMinutos / 60)).padStart(2, '0')}:${String(cierreEnMinutos % 60).padStart(2, '0')}`;
+            horaCita.step = pasoCita;
+        };
+
+        fechaCita.addEventListener('change', actualizarLimitesHora);
+        actualizarLimitesHora();
+    </script>
 </x-app-layout>

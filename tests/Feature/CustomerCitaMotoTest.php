@@ -6,11 +6,24 @@ use App\Models\Cliente;
 use App\Models\Moto;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class CustomerCitaMotoTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Carbon::setTestNow(Carbon::parse('2026-11-12 10:15:00', 'America/Bogota'));
+    }
+
+    protected function tearDown(): void
+    {
+        Carbon::setTestNow();
+        parent::tearDown();
+    }
 
     public function test_customer_create_form_shows_only_own_motos_and_selects_the_only_moto(): void
     {
@@ -39,7 +52,7 @@ class CustomerCitaMotoTest extends TestCase
             ->post(route('mis-citas.store'), [
                 'cliente_id' => $otherCliente->id,
                 'moto_id' => $moto->id,
-                'fecha' => '2026-12-12',
+                'fecha' => now(config('app.timezone'))->addDay()->toDateString(),
                 'hora' => '10:00',
                 'servicio' => 'Cambio de aceite',
             ])
@@ -65,7 +78,7 @@ class CustomerCitaMotoTest extends TestCase
             ->post(route('mis-citas.store'), [
                 'cliente_id' => $otherCliente->id,
                 'moto_id' => $otherMoto->id,
-                'fecha' => '2026-12-12',
+                'fecha' => now(config('app.timezone'))->addDay()->toDateString(),
                 'hora' => '10:00',
                 'servicio' => 'Cambio de aceite',
             ])
@@ -91,7 +104,7 @@ class CustomerCitaMotoTest extends TestCase
         );
 
         $this->post(route('mis-citas.store'), [
-            'fecha' => '2026-12-12',
+            'fecha' => now(config('app.timezone'))->addDay()->toDateString(),
             'hora' => '10:00',
             'servicio' => 'Cambio de aceite',
         ])->assertSessionHasErrors('moto_id');

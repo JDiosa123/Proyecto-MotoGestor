@@ -8,11 +8,24 @@ use App\Models\Moto;
 use App\Models\Producto;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class InventoryAndCitasSchemaTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Carbon::setTestNow(Carbon::parse('2026-11-12 10:15:00', 'America/Bogota'));
+    }
+
+    protected function tearDown(): void
+    {
+        Carbon::setTestNow();
+        parent::tearDown();
+    }
 
     public function test_salida_uses_a_transactional_movement_and_reduces_stock(): void
     {
@@ -65,7 +78,7 @@ class InventoryAndCitasSchemaTest extends TestCase
                 'cliente_id' => $cliente->id,
                 'moto_id' => $moto->id,
                 'mecanico_id' => null,
-                'fecha' => '2026-11-10',
+                'fecha' => now(config('app.timezone'))->toDateString(),
                 'hora' => '10:00',
                 'servicio' => 'Cambio de aceite',
             ])
@@ -89,7 +102,7 @@ class InventoryAndCitasSchemaTest extends TestCase
             'cliente_id' => $cliente->id,
             'moto_id' => $moto->id,
             'mecanico_id' => null,
-            'fecha' => '2026-11-10',
+            'fecha' => now(config('app.timezone'))->toDateString(),
             'hora' => '14:35:00',
         ]);
         $producto = Producto::factory()->create();
@@ -99,7 +112,7 @@ class InventoryAndCitasSchemaTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Support\Carbon::class, $cita->fecha);
         $this->get(route('admin.citas.edit', $cita))
             ->assertOk()
-            ->assertSee('value="2026-11-10"', false)
+            ->assertSee('value="'.now(config('app.timezone'))->toDateString().'"', false)
             ->assertSee('value="14:35"', false);
 
         foreach ([

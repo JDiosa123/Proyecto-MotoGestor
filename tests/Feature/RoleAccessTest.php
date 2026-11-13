@@ -8,12 +8,25 @@ use App\Models\Moto;
 use App\Models\Producto;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class RoleAccessTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Carbon::setTestNow(Carbon::parse('2026-11-12 10:15:00', 'America/Bogota'));
+    }
+
+    protected function tearDown(): void
+    {
+        Carbon::setTestNow();
+        parent::tearDown();
+    }
 
     public function test_each_non_admin_role_is_forbidden_from_restricted_modules(): void
     {
@@ -160,7 +173,7 @@ class RoleAccessTest extends TestCase
             ->post(route('mis-citas.store'), [
                 'cliente_id' => $otherCliente->id,
                 'moto_id' => $moto->id,
-                'fecha' => '2026-12-12',
+                'fecha' => now(config('app.timezone'))->addDay()->toDateString(),
                 'hora' => '10:00',
                 'servicio' => 'Servicio solicitado',
             ])
