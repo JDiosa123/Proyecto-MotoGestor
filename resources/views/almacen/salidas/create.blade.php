@@ -93,7 +93,8 @@
                                 </label>
 
                                 <input id="fecha" type="date" name="fecha"
-                                    value="{{ old('fecha') }}"
+                                    value="{{ old('fecha', now(config('app.timezone'))->toDateString()) }}"
+                                    max="{{ now(config('app.timezone'))->toDateString() }}"
                                     class="w-full border-gray-300 dark:border-gray-700 
                                     dark:bg-gray-900 dark:text-gray-300 rounded-lg shadow-sm focus:border-red-500 focus:ring-red-500
                                     @error('fecha') border-red-500 @enderror">

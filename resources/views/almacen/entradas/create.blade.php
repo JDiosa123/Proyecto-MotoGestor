@@ -75,6 +75,13 @@
                                 @error('precio') <p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p> @enderror
                             </div>
 
+                            <div class="col-span-full md:col-span-4">
+                                <label for="fecha" class="block font-medium text-sm text-gray-700 dark:text-gray-300 mb-1">Fecha de entrada</label>
+                                <input id="fecha" type="date" name="fecha" value="{{ old('fecha', now(config('app.timezone'))->toDateString()) }}" max="{{ now(config('app.timezone'))->toDateString() }}"
+                                    class="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-lg shadow-sm focus:border-green-500 focus:ring-green-500 @error('fecha') border-red-500 @enderror">
+                                @error('fecha') <p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p> @enderror
+                            </div>
+
                             {{-- Descripción (8/12) --}}
                             <div class="col-span-full md:col-span-8">
                                 <label for="descripcion" class="block font-medium text-sm text-gray-700 dark:text-gray-300 mb-1">Descripción / Notas de la Entrada</label>

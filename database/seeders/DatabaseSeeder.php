@@ -17,6 +17,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(DiasNoLaborablesSeeder::class);
+
         if (! app()->environment('local', 'testing')) {
             $adminEmail = env('ADMIN_EMAIL');
             $adminPassword = env('ADMIN_PASSWORD');

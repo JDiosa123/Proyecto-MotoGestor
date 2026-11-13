@@ -38,6 +38,13 @@
                         </div>
 
                         <div>
+                            <x-input-label for="fecha_registro" :value="__('Fecha de registro')" />
+                            <x-text-input id="fecha_registro" type="date" name="fecha_registro" class="mt-1 block w-full"
+                                :value="old('fecha_registro', now(config('app.timezone'))->toDateString())" max="{{ now(config('app.timezone'))->toDateString() }}" required />
+                            <x-input-error :messages="$errors->get('fecha_registro')" class="mt-2" />
+                        </div>
+
+                        <div>
                             <x-input-label for="stock_minimo" :value="__('Stock mínimo')" />
                             <x-text-input id="stock_minimo" type="number" min="0" step="1" name="stock_minimo" class="mt-1 block w-full"
                                 :value="old('stock_minimo', 0)" required />

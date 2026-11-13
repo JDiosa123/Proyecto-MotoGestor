@@ -5,6 +5,9 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Models\User;
+use App\Rules\FechaCitaFutura;
+use App\Rules\HorarioCita;
+use App\Services\HorarioTaller;
 
 class StoreCitaRequest extends FormRequest
 {
@@ -29,7 +32,12 @@ class StoreCitaRequest extends FormRequest
             'cliente_id' => ['required', Rule::exists('clientes', 'id')],
             'moto_id' => ['required', Rule::exists('motos', 'id')->where('cliente_id', $this->input('cliente_id'))],
             'mecanico_id' => ['nullable', Rule::exists('users', 'id')->where('role', User::ROLE_MECHANIC)],
-            'fecha' => ['required', 'date'],
+            'fecha' => [
+                'required',
+                'date',
+                new FechaCitaFutura($this->user()?->role),
+                new HorarioCita(app(HorarioTaller::class)),
+            ],
             'hora' => ['required', 'date_format:H:i'],
             'servicio' => ['required', 'string', 'max:255'],
         ];
@@ -43,6 +51,7 @@ class StoreCitaRequest extends FormRequest
             'mecanico_id.exists' => 'Mecánico no válido.',
             'hora.date_format' => 'La hora debe tener el formato HH:MM.',
             'servicio.required' => 'El servicio es obligatorio.',
+            'fecha.date' => 'La fecha de la cita no es válida.',
         ];
     }
 }

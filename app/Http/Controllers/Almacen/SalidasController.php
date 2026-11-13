@@ -35,7 +35,9 @@ class SalidasController extends Controller
             'id_producto' => ['required', 'exists:productos,id'],
             'cantidad' => ['required', 'integer', 'min:1'],
             'descripcion' => ['nullable', 'string', 'max:255'],
-            'fecha' => ['nullable', 'date'],
+            'fecha' => ['nullable', 'date', 'before_or_equal:today'],
+        ], [
+            'fecha.before_or_equal' => 'La fecha no puede ser posterior a hoy.',
         ]);
 
         DB::transaction(function () use ($data): void {
