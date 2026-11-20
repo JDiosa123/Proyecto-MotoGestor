@@ -6,9 +6,11 @@ use App\Models\Cita;
 use App\Models\Cliente;
 use App\Models\DiaNoLaborable;
 use App\Models\Moto;
+use App\Models\Servicio;
 use App\Models\User;
 use App\Services\HorarioTaller;
 use Database\Seeders\DiasNoLaborablesSeeder;
+use Database\Seeders\ServiciosSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
@@ -22,6 +24,7 @@ class AppointmentScheduleTest extends TestCase
         parent::setUp();
         Carbon::setTestNow(Carbon::parse('2026-11-12 10:15:00', 'America/Bogota'));
         $this->seed(DiasNoLaborablesSeeder::class);
+        $this->seed(ServiciosSeeder::class);
     }
 
     protected function tearDown(): void
@@ -30,29 +33,23 @@ class AppointmentScheduleTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_schedule_rules_accept_and_reject_weekday_times(): void
+    public function test_service_ingress_time_is_fixed_regardless_of_submitted_time(): void
     {
-        foreach ([
-            ['2026-11-23', '08:00', false],
-            ['2026-11-23', '08:30', true],
-            ['2026-11-23', '17:30', true],
-            ['2026-11-23', '18:00', false],
-            ['2026-11-23', '08:50', false],
-        ] as [$fecha, $hora, $accepted]) {
-            $response = $this->submitAppointment($fecha, $hora);
-
-            if ($accepted) {
-                $response->assertRedirect(route('admin.citas.index'));
-            } else {
-                $response->assertSessionHasErrors('fecha');
-            }
+        foreach (['08:00', '08:30', '17:30', '18:00', '08:50'] as $hora) {
+            $this->submitAppointment('2026-11-23', $hora)
+                ->assertRedirect(route('admin.citas.index'));
         }
+
+        $this->assertSame(
+            5,
+            \App\Models\Cita::whereDate('fecha', '2026-11-23')->where('hora', '08:30')->count()
+        );
     }
 
     public function test_schedule_rules_accept_and_reject_saturday_and_sunday(): void
     {
         foreach ([
-            ['2026-11-14', '11:30', true],
+            ['2026-11-14', '11:30', false],
             ['2026-11-14', '12:00', false],
             ['2026-11-14', '14:00', false],
             ['2026-11-15', '10:00', false],
@@ -154,6 +151,7 @@ class AppointmentScheduleTest extends TestCase
         $cita = $this->createCita([
             'fecha' => '2020-01-05',
             'hora' => '22:10:00',
+            'servicio_id' => Servicio::where('nombre', 'Mantenimiento general')->value('id'),
         ]);
 
         $this->actingAs($admin)
@@ -169,6 +167,7 @@ class AppointmentScheduleTest extends TestCase
         $cita = $this->createCita([
             'fecha' => '2026-11-23',
             'hora' => '10:00:00',
+            'servicio_id' => Servicio::where('nombre', 'Mantenimiento general')->value('id'),
         ]);
 
         $this->actingAs($admin)
@@ -202,15 +201,11 @@ class AppointmentScheduleTest extends TestCase
         $cliente = Cliente::factory()->create();
         $moto = Moto::factory()->create(['cliente_id' => $cliente->id]);
         $cita = $this->createCita(['cliente_id' => $cliente->id]);
-        $today = now(config('app.timezone'))->toDateString();
-
         $this->actingAs($admin)
             ->get(route('admin.citas.create'))
             ->assertOk()
-            ->assertSee('min="'.$today.'"', false)
-            ->assertSee('step="1800"', false)
-            ->assertSee('max="17:30"', false)
-            ->assertSee('08:30');
+            ->assertSee('Mantenimiento general')
+            ->assertSee('Lleva tu moto a partir de las 8:30 a. m.');
 
         $edit = $this->get(route('admin.citas.edit', $cita))->assertOk();
         $edit->assertDontSee('name="fecha" min=', false);
@@ -235,7 +230,7 @@ class AppointmentScheduleTest extends TestCase
             'mecanico_id' => null,
             'fecha' => $fecha,
             'hora' => $hora,
-            'servicio' => 'Cambio de aceite',
+            'servicio_id' => Servicio::where('nombre', 'Mantenimiento general')->value('id'),
         ];
     }
 
@@ -273,6 +268,7 @@ class AppointmentScheduleTest extends TestCase
             'hora' => substr($cita->hora, 0, 5),
             'estado' => $cita->estado,
             'servicio' => $cita->servicio,
+            'servicio_id' => $cita->servicio_id,
             'motivo_cancelacion' => null,
         ], $overrides);
     }

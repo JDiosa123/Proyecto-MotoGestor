@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
-use App\Models\User;
 
 class Cita extends Model
 {
@@ -21,6 +20,8 @@ class Cita extends Model
         'hora',
         'estado',
         'servicio',
+        'servicio_id',
+        'observaciones',
         'motivo_cancelacion',
     ];
 
@@ -42,6 +43,11 @@ class Cita extends Model
     public function mecanico()
     {
         return $this->belongsTo(User::class, 'mecanico_id');
+    }
+
+    public function servicioCatalogo()
+    {
+        return $this->belongsTo(Servicio::class, 'servicio_id');
     }
 
     public function scopePendiente(Builder $query): Builder
