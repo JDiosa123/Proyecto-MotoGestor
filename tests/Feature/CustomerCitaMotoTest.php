@@ -4,7 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\Cliente;
 use App\Models\Moto;
+use App\Models\Servicio;
 use App\Models\User;
+use Database\Seeders\ServiciosSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
@@ -17,6 +19,7 @@ class CustomerCitaMotoTest extends TestCase
     {
         parent::setUp();
         Carbon::setTestNow(Carbon::parse('2026-11-12 10:15:00', 'America/Bogota'));
+        $this->seed(ServiciosSeeder::class);
     }
 
     protected function tearDown(): void
@@ -54,7 +57,7 @@ class CustomerCitaMotoTest extends TestCase
                 'moto_id' => $moto->id,
                 'fecha' => now(config('app.timezone'))->addDay()->toDateString(),
                 'hora' => '10:00',
-                'servicio' => 'Cambio de aceite',
+                'servicio_id' => $this->mantenimiento()->id,
             ])
             ->assertRedirect(route('mis-citas.index'));
 
@@ -62,7 +65,8 @@ class CustomerCitaMotoTest extends TestCase
             'cliente_id' => $cliente->id,
             'moto_id' => $moto->id,
             'estado' => 'solicitada',
-            'servicio' => 'Cambio de aceite',
+            'servicio' => 'Mantenimiento general',
+            'servicio_id' => $this->mantenimiento()->id,
         ]);
         $this->assertDatabaseMissing('citas', ['cliente_id' => $otherCliente->id]);
     }
@@ -140,5 +144,10 @@ class CustomerCitaMotoTest extends TestCase
         $cliente = Cliente::factory()->create(['user_id' => $user->id]);
 
         return [$user, $cliente];
+    }
+
+    private function mantenimiento(): Servicio
+    {
+        return Servicio::where('nombre', 'Mantenimiento general')->firstOrFail();
     }
 }

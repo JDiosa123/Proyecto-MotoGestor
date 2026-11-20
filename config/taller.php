@@ -11,4 +11,7 @@ return [
     ],
     'paso_minutos' => 30,
     'margen_cierre_minutos' => 30,
+    'cupo_maximo_dia' => 3,
+    'dias_max_anticipacion' => 30,
+    'sabado_dia_completo' => false,
 ];

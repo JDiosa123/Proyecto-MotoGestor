@@ -5,7 +5,9 @@ namespace Tests\Feature;
 use App\Models\Cita;
 use App\Models\Cliente;
 use App\Models\Moto;
+use App\Models\Servicio;
 use App\Models\User;
+use Database\Seeders\ServiciosSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
@@ -18,6 +20,7 @@ class RejectCitaTest extends TestCase
     {
         parent::setUp();
         Carbon::setTestNow(Carbon::parse('2026-11-12 10:15:00', 'America/Bogota'));
+        $this->seed(ServiciosSeeder::class);
     }
 
     protected function tearDown(): void
@@ -143,7 +146,7 @@ class RejectCitaTest extends TestCase
                 'mecanico_id' => $mechanic->id,
                 'fecha' => $this->nextFriday(),
                 'hora' => '10:00',
-                'servicio' => 'Cambio de aceite',
+                'servicio_id' => Servicio::where('nombre', 'Mantenimiento general')->value('id'),
             ])
             ->assertRedirect(route('admin.citas.index'));
 
@@ -151,7 +154,7 @@ class RejectCitaTest extends TestCase
             'cliente_id' => $otherCliente->id,
             'mecanico_id' => $mechanic->id,
             'fecha' => $this->nextFriday().' 00:00:00',
-            'hora' => '10:00',
+            'hora' => '08:30',
             'estado' => 'solicitada',
         ]);
     }
@@ -173,6 +176,7 @@ class RejectCitaTest extends TestCase
         $target = $this->createCita([
             'fecha' => Carbon::parse($this->nextFriday())->addDay()->toDateString(),
             'hora' => '11:00:00',
+            'servicio_id' => Servicio::where('nombre', 'Mantenimiento general')->value('id'),
         ]);
         $admin = User::factory()->admin()->create();
 
@@ -185,6 +189,7 @@ class RejectCitaTest extends TestCase
                 'hora' => '10:00',
                 'estado' => 'solicitada',
                 'servicio' => $target->servicio,
+                'servicio_id' => $target->servicio_id,
                 'motivo_cancelacion' => null,
             ])
             ->assertRedirect(route('admin.citas.index'));

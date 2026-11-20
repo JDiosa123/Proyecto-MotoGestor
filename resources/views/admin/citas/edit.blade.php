@@ -78,11 +78,28 @@
                         </div>
 
                         <div>
-                            <x-input-label for="servicio" :value="__('Servicio solicitado')" />
-                            <x-text-input id="servicio" type="text" name="servicio"
-                                class="block mt-1 w-full dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700"
-                                :value="old('servicio', $cita->servicio)" maxlength="255" required />
-                            <x-input-error :messages="$errors->get('servicio')" class="mt-2" />
+                            <x-input-label for="servicio_id" :value="__('Servicio solicitado')" />
+                            <select id="servicio_id" name="servicio_id"
+                                class="block mt-1 w-full rounded-md border-gray-300 shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                                <option value="" {{ old('servicio_id', $cita->servicio_id) === null ? 'selected' : '' }}>
+                                    {{ filled($cita->servicio) ? 'Servicio anterior: '.$cita->servicio : 'Seleccione un servicio' }}
+                                </option>
+                                @foreach ($servicios as $servicio)
+                                    <option value="{{ $servicio->id }}"
+                                        {{ (string) old('servicio_id', $cita->servicio_id) === (string) $servicio->id ? 'selected' : '' }}>
+                                        {{ $servicio->nombre }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <input type="hidden" name="servicio" value="{{ old('servicio', $cita->servicio) }}">
+                            <x-input-error :messages="$errors->get('servicio_id')" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="observaciones" :value="__('Observaciones o síntomas (opcional)')" />
+                            <textarea id="observaciones" name="observaciones" rows="3"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">{{ old('observaciones', $cita->observaciones) }}</textarea>
+                            <x-input-error :messages="$errors->get('observaciones')" class="mt-2" />
                         </div>
 
                         {{-- FECHA --}}

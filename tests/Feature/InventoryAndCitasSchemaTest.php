@@ -2,11 +2,13 @@
 
 namespace Tests\Feature;
 
-use App\Models\Cliente;
 use App\Models\Cita;
+use App\Models\Cliente;
 use App\Models\Moto;
 use App\Models\Producto;
+use App\Models\Servicio;
 use App\Models\User;
+use Database\Seeders\ServiciosSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
@@ -19,6 +21,7 @@ class InventoryAndCitasSchemaTest extends TestCase
     {
         parent::setUp();
         Carbon::setTestNow(Carbon::parse('2026-11-12 10:15:00', 'America/Bogota'));
+        $this->seed(ServiciosSeeder::class);
     }
 
     protected function tearDown(): void
@@ -80,7 +83,7 @@ class InventoryAndCitasSchemaTest extends TestCase
                 'mecanico_id' => null,
                 'fecha' => now(config('app.timezone'))->toDateString(),
                 'hora' => '10:00',
-                'servicio' => 'Cambio de aceite',
+                'servicio_id' => Servicio::where('nombre', 'Mantenimiento general')->value('id'),
             ])
             ->assertRedirect(route('admin.citas.index'));
 
@@ -89,7 +92,8 @@ class InventoryAndCitasSchemaTest extends TestCase
             'moto_id' => $moto->id,
             'mecanico_id' => null,
             'estado' => 'solicitada',
-            'servicio' => 'Cambio de aceite',
+            'servicio' => 'Mantenimiento general',
+            'servicio_id' => Servicio::where('nombre', 'Mantenimiento general')->value('id'),
         ]);
     }
 

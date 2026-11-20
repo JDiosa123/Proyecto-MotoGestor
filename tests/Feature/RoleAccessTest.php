@@ -5,8 +5,9 @@ namespace Tests\Feature;
 use App\Models\Cita;
 use App\Models\Cliente;
 use App\Models\Moto;
-use App\Models\Producto;
+use App\Models\Servicio;
 use App\Models\User;
+use Database\Seeders\ServiciosSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -20,6 +21,7 @@ class RoleAccessTest extends TestCase
     {
         parent::setUp();
         Carbon::setTestNow(Carbon::parse('2026-11-12 10:15:00', 'America/Bogota'));
+        $this->seed(ServiciosSeeder::class);
     }
 
     protected function tearDown(): void
@@ -175,7 +177,7 @@ class RoleAccessTest extends TestCase
                 'moto_id' => $moto->id,
                 'fecha' => now(config('app.timezone'))->addDay()->toDateString(),
                 'hora' => '10:00',
-                'servicio' => 'Servicio solicitado',
+                'servicio_id' => Servicio::where('nombre', 'Mantenimiento general')->value('id'),
             ])
             ->assertRedirect(route('mis-citas.index'));
 
@@ -246,13 +248,13 @@ class RoleAccessTest extends TestCase
         $this->get(route('admin.users.create'))
             ->assertOk()
             ->assertSee('Al menos 8 caracteres')
-        ->assertSee('data-password-toggle="password"', false);
+            ->assertSee('data-password-toggle="password"', false);
 
         $user = User::factory()->admin()->create();
         $this->get(route('admin.users.edit', $user))
             ->assertOk()
             ->assertSee('Al menos 8 caracteres')
-        ->assertSee('data-password-toggle="password_confirmation"', false);
+            ->assertSee('data-password-toggle="password_confirmation"', false);
     }
 
     private function createClientAccount(string $email = 'cliente@motogestor.com'): array

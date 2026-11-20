@@ -78,7 +78,7 @@
                                     <td class="break-words px-3 py-4 text-sm text-gray-700 dark:text-gray-200">
                                         <div class="font-medium text-gray-900 dark:text-gray-100">{{ $cita->moto?->placa }}</div>
                                         <div class="text-xs text-gray-500 dark:text-gray-400">{{ $cita->moto?->marca }} {{ $cita->moto?->modelo }} @if ($cita->moto?->color) ({{ $cita->moto->color }}) @endif</div>
-                                        <div class="mt-2 text-xs text-gray-600 dark:text-gray-300"><span class="font-medium">Servicio:</span> {{ filled($cita->servicio) ? $cita->servicio : '-' }}</div>
+                                        <div class="mt-2 text-xs text-gray-600 dark:text-gray-300"><span class="font-medium">Servicio:</span> {{ $cita->servicioCatalogo?->nombre ?? (filled($cita->servicio) ? $cita->servicio : '-') }}</div>
                                     </td>
                                     <td class="break-words px-3 py-4 text-sm text-gray-700 dark:text-gray-200">{{ $cita->mecanico?->name ?? 'Sin asignar' }}</td>
                                     <td class="px-3 py-4 text-sm text-gray-700 dark:text-gray-200">{{ \Carbon\Carbon::parse($cita->fecha)->format('d/m/Y') }}</td>
@@ -152,7 +152,7 @@
                                     <dt class="text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Moto / servicio</dt>
                                     <dd class="break-words font-medium text-gray-900 dark:text-gray-100">{{ $cita->moto?->placa }}</dd>
                                     <dd class="break-words text-gray-600 dark:text-gray-300">{{ $cita->moto?->marca }} {{ $cita->moto?->modelo }}</dd>
-                                    <dd class="mt-1 break-words text-xs text-gray-600 dark:text-gray-300">{{ filled($cita->servicio) ? $cita->servicio : '-' }}</dd>
+                                    <dd class="mt-1 break-words text-xs text-gray-600 dark:text-gray-300">{{ $cita->servicioCatalogo?->nombre ?? (filled($cita->servicio) ? $cita->servicio : '-') }}</dd>
                                 </div>
                                 <div class="min-w-0">
                                     <dt class="text-xs font-medium uppercase text-gray-500 dark:text-gray-400">Mecánico</dt>
